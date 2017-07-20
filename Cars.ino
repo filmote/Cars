@@ -33,6 +33,9 @@ int x = 0;
 bool dirUp = false;
 
 Car car1;
+Car car2;
+Car car3;
+
 void setup() {
   arduboy.begin();
   arduboy.setFrameRate(60);
@@ -50,7 +53,22 @@ arduboy.sBuffer[127]=255;
 car1.setX(115);
 car1.setY(32);
 car1.bitmap = car;
+car1.setEnabled(true);
 car1.renderImage(sprites, frame);
+
+car2.setX(128);
+car2.setY(48);
+car2.bitmap = car;
+car2.setEnabled(true);
+car2.setSpeed(-10);
+car2.renderImage(sprites, frame);
+
+car3.setX(128);
+car3.setY(16);
+car3.bitmap = car;
+car3.setEnabled(true);
+//car3.setSpeed(-6);
+car3.renderImage(sprites, frame);
     arduboy.display();
 }
 
@@ -60,7 +78,42 @@ void loop() {
   if (!(arduboy.nextFrame())) return;
   
   scrollBuffer(scrollIncrement);
+  car1.scroll(scrollIncrement);
+  car2.scroll(scrollIncrement);
+  car3.scroll(scrollIncrement);
+
+  if (!car1.getEnabled()) {  
+    car1.setX(WIDTH);
+    car1.setEnabled(true);
+  }
+
+  if (!car2.getEnabled()) {  
+    car2.setX(WIDTH);
+    car2.setEnabled(true);
+  }
+  
+  if (!car3.getEnabled()) {  
+    car3.setX(WIDTH);
+    car3.setEnabled(true);
+  }
+  
+  Serial.print("Car.x: ");
+  Serial.print(car1.getX());
+  Serial.print(", y:");
+  Serial.print(car1.getY());
+  Serial.print(", enabled:");
+  Serial.print(car1.getEnabled());
+  Serial.print(", renderRequired:");
+  Serial.println(car1.getRenderRequired());
+  
+  
   car1.renderImage(sprites, frame);
+  car2.renderImage(sprites, frame);
+  car3.renderImage(sprites, frame);
+
+
+
+  
   sprites.drawOverwrite(0, 24, car, frame);
   arduboy.drawPixel(127, x);
 

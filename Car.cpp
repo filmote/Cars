@@ -7,6 +7,8 @@
 Car::Car() {
 	
   renderRequired = true;
+  enabled = false;
+  speed = 0;
   
 }
 
@@ -18,7 +20,7 @@ Car::Car() {
  */
 Rect Car::getOuterRect() {
    
-  return (Rect){x, y, pgm_read_byte(bitmap), pgm_read_byte(bitmap + 1)};
+  return (Rect){this->getX(), this->getY(), pgm_read_byte(bitmap), pgm_read_byte(bitmap + 1)};
 
 }
 
@@ -29,7 +31,7 @@ Rect Car::getOuterRect() {
  */
 Rect Car::getInnerRect() {
    
-  return (Rect){x + 1, y + 1, pgm_read_byte(bitmap) - 2, pgm_read_byte(bitmap + 1) - 2};
+  return (Rect){this->getX() + 1, this->getY() + 1, pgm_read_byte(bitmap) - 2, pgm_read_byte(bitmap + 1) - 2};
 
 }
 
@@ -39,57 +41,103 @@ Rect Car::getInnerRect() {
  */
 void Car::scroll(byte pixels) {
 	
-	y = y - pixels;
-	
-}
-
-int16_t Car::getX() {
-
-	return x;
-	
-}
-
-void Car::setX(int16_t x) {
+	x = x - (pixels * 10) - speed;
+  renderRequired = (speed != 0 || this->getX() > WIDTH - this->getWidth());
+  enabled = (this->getWidth() + this->getX() > 0);
   
-  x = x;
+}
+
+int Car::getX() {
+
+	return x / 10;
+	
+}
+
+void Car::setX(int value) {
+  
+  x = value * 10;
   renderRequired = true;
   
 }
 
-int16_t Car::getY() {
+int Car::getY() {
 
-  return y;
+  return y / 10;
 	
 }
 
-void Car::setY(int16_t y1) {
+void Car::setY(int value) {
 	
-  y = y1;
+  y = value * 10;
   renderRequired = true;
   
 }
 
-int16_t Car::getWidth() {
+
+int Car::getSpeed() {
+
+  return speed;
+  
+}
+
+void Car::setSpeed(int value) {
+  
+  speed = value;
+  renderRequired = true;
+  
+}
+
+
+bool Car::getEnabled() {
+
+  return enabled;
+  
+}
+
+
+void Car::setEnabled(bool value) {
+  
+  enabled = value;
+  renderRequired = true;
+  
+}
+
+
+
+bool Car::getRenderRequired() {
+
+  return renderRequired;
+  
+}
+
+
+void Car::setRenderRequired(bool value) {
+  
+  renderRequired = value;
+  
+}
+
+int Car::getWidth() {
 
 	return pgm_read_byte(bitmap);
 	
 }
 
-int16_t Car::getHeight() {
+int Car::getHeight() {
 
 	return pgm_read_byte(bitmap + 1);
 	
 }
 
 void Car::renderImage(Sprites sprites, int16_t frame) {
-Serial1.println("renderImage");
-  if (x <= WIDTH && renderRequired) {
+
+  if (renderRequired && enabled) {
 	  
-//    sprites.drawExternalMask(x, y, bitmap, mask, frame, frame);
-    sprites.drawOverwrite(x, y, bitmap, frame);
-	  renderRequired = false;
+    sprites.drawExternalMask(this->getX(), this->getY(), bitmap, mask, frame, frame);
+    sprites.drawOverwrite(this->getX(), this->getY(), bitmap, frame);
 	  
+    renderRequired = false;
+      
   }
-	
 }
 

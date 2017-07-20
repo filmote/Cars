@@ -13,10 +13,17 @@ class Car {
      void renderImage(Sprites sprite, int16_t frame);
      void scroll(byte pixels);
      
-     int16_t getX();
-     void setX(int16_t x);
-     int16_t getY();
-     void setY(int16_t y);
+     int getX();
+     int getY();
+     int getSpeed();
+     bool getEnabled();
+     bool getRenderRequired();
+
+     void setX(int value);
+     void setY(int value);
+     void setSpeed(int value);
+     void setEnabled(bool value);
+     void setRenderRequired(bool value);
      
      int16_t getWidth();
      int16_t getHeight();
@@ -25,8 +32,10 @@ class Car {
      const uint8_t *mask;
      
    private:
-        boolean renderRequired;
-     int16_t x;
-     int16_t y;
+     bool renderRequired;
+     int x;               // factor of 10
+     int y;               // factor of 10
+     int speed;           // factor of 10
+     bool enabled;
 };
 #endif
