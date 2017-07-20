@@ -1,4 +1,4 @@
-void scrollBuffer(byte scrollIncrement) {
+void scrollBuffer(byte scrollIncrement) { 
 
     int f = arduboy.sBuffer + BUFFER_ROW_0_START + scrollIncrement;
 Serial.print("WIDTH: ");
