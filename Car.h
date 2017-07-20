@@ -23,6 +23,7 @@ class Car {
 
      const uint8_t *bitmap;
      const uint8_t *mask;
+     
    private:
         boolean renderRequired;
      int16_t x;
