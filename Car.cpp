@@ -1,50 +1,57 @@
 #include "Car.h"
 #include "Arduboy2.h"
 #include "Sprites.h" 
+#include "Arduino.h"
 
-Car::Car(Sprites sprites) {
+Car::Car(String name) {
 
-  _sprites = sprites;
+  _name = name;
   _renderRequired = true;
   _enabled = false;
   _speed = 0;
   
 }
 
+bool Car::operator==(Car& rhs)const{
+  return (this->getName()==rhs.getName());
+}
+
+bool Car::operator!=(Car& rhs)const{
+  return (this->getName()!=rhs.getName());
+}
+
+void Car::debug() {
+  
+  Serial.print(this->getName());
+  Serial.print(": x=");
+  Serial.print(this->getX());
+  Serial.print(", y=");
+  Serial.print(this->getY());
+  Serial.print(", width=");
+  Serial.print(this->getWidth());
+  Serial.print(", height=");
+  Serial.print(this->getHeight());
+  Serial.print(", xMax=");
+  Serial.print(this->getX() + this->getWidth());
+  Serial.print(", yMax=");
+  Serial.print(this->getY() + this->getHeight());
+  Serial.print(", bitmap=");
+  Serial.print(*bitmap);
+  Serial.println(" ");
+  
+}
+
 
 /*
  * Get rectangle of image.
- * 
- * Assumption is the image is surrounded by a single pixel space on four sides
  */
-Rect Car::getOuterRect() {
+Rect Car::getRect() {
    
   return (Rect){this->getX(), this->getY(), pgm_read_byte(bitmap), pgm_read_byte(bitmap + 1)};
 
 }
 
-/*
- * Get rectangle surrounding the car itself.
- * 
- * Assumption is the image is surrounded by a single pixel space on four sides
- */
-Rect Car::getInnerRect() {
-   
-  return (Rect){this->getX() + 1, this->getY() + 1, pgm_read_byte(bitmap) - 2, pgm_read_byte(bitmap + 1) - 2};
 
-}
-
-/*
- * Get rectangle surrounding the car itself.
- * 
- * Assumption is the image is surrounded by a single pixel space on four sides
- *
-Rect getInnerRect(int x, int y) {
-   
-  return (Rect){x, y, pgm_read_byte(bitmap) - 2, pgm_read_byte(bitmap + 1) - 2};
-
-}
-*/
 /*
  * Simply scrolling the images to the left does not force the image to be rendered again.
  */
@@ -55,10 +62,22 @@ void Car::scroll(byte pixels) {
   int x = _x - (pixels * 10) - _speed;
   int y = _y;
 
-  int size = sizeof(cars) / sizeof(Car);
+  for (int i = 0; i < 3; ++i) {
 
-  for(int i = 0; i < 3; ++i) {
-    //
+    Car car = _cars[i];
+
+    if (car != *this) {
+
+      if (_arduboy.collide(car.getRect(), this->getRect())) {
+        
+        Serial.println("- Collide ----------------------------");
+        car.debug();
+        this->debug();
+
+      }
+      
+    }
+
   }
 
   if (noCollisions) {
@@ -154,6 +173,29 @@ int Car::getHeight() {
 	
 }
 
+void Car::setSprites(Sprites value) {
+
+  _sprites = value;
+  
+}
+
+void Car::setArduboy(Arduboy2 value) {
+
+  _arduboy = value;
+  
+}
+
+void Car::setCars(Car value[]) {
+
+  _cars = value;
+  
+}
+
+String Car::getName() {
+
+  return _name;
+  
+}
 void Car::renderImage(int16_t frame) {
 
   if (_renderRequired && _enabled) {
