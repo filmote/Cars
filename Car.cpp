@@ -2,13 +2,12 @@
 #include "Arduboy2.h"
 #include "Sprites.h" 
 
+Car::Car(Sprites sprites) {
 
-
-Car::Car() {
-	
-  renderRequired = true;
-  enabled = false;
-  speed = 0;
+  _sprites = sprites;
+  _renderRequired = true;
+  _enabled = false;
+  _speed = 0;
   
 }
 
@@ -35,70 +34,96 @@ Rect Car::getInnerRect() {
 
 }
 
+/*
+ * Get rectangle surrounding the car itself.
+ * 
+ * Assumption is the image is surrounded by a single pixel space on four sides
+ *
+Rect getInnerRect(int x, int y) {
+   
+  return (Rect){x, y, pgm_read_byte(bitmap) - 2, pgm_read_byte(bitmap + 1) - 2};
 
+}
+*/
 /*
  * Simply scrolling the images to the left does not force the image to be rendered again.
  */
 void Car::scroll(byte pixels) {
-	
-	x = x - (pixels * 10) - speed;
-  renderRequired = (speed != 0 || this->getX() > WIDTH - this->getWidth());
-  enabled = (this->getWidth() + this->getX() > 0);
+
+  bool noCollisions = true;
+  
+  int x = _x - (pixels * 10) - _speed;
+  int y = _y;
+
+  int size = sizeof(cars) / sizeof(Car);
+
+  for(int i = 0; i < 3; ++i) {
+    //
+  }
+
+  if (noCollisions) {
+    
+  	_x = x;
+    _y = y;
+    _renderRequired = (_speed != 0 || this->getX() > WIDTH - this->getWidth());
+    _enabled = (this->getWidth() + this->getX() > 0);
+    
+  }
   
 }
 
 int Car::getX() {
 
-	return x / 10;
+	return _x / 10;
 	
 }
 
 void Car::setX(int value) {
   
-  x = value * 10;
-  renderRequired = true;
+  _x = value * 10;
+  _renderRequired = true;
   
 }
 
 int Car::getY() {
 
-  return y / 10;
+  return _y / 10;
 	
 }
 
 void Car::setY(int value) {
 	
-  y = value * 10;
-  renderRequired = true;
+  _y = value * 10;
+  _renderRequired = true;
   
 }
 
 
 int Car::getSpeed() {
 
-  return speed;
+  return _speed;
   
 }
 
 void Car::setSpeed(int value) {
   
-  speed = value;
-  renderRequired = true;
+  _speed = value;
+  _renderRequired = true;
   
 }
 
 
 bool Car::getEnabled() {
 
-  return enabled;
+  return _enabled;
   
 }
 
 
 void Car::setEnabled(bool value) {
   
-  enabled = value;
-  renderRequired = true;
+  _enabled = value;
+  _renderRequired = true;
   
 }
 
@@ -106,14 +131,14 @@ void Car::setEnabled(bool value) {
 
 bool Car::getRenderRequired() {
 
-  return renderRequired;
+  return _renderRequired;
   
 }
 
 
 void Car::setRenderRequired(bool value) {
   
-  renderRequired = value;
+  _renderRequired = value;
   
 }
 
@@ -129,15 +154,16 @@ int Car::getHeight() {
 	
 }
 
-void Car::renderImage(Sprites sprites, int16_t frame) {
+void Car::renderImage(int16_t frame) {
 
-  if (renderRequired && enabled) {
+  if (_renderRequired && _enabled) {
 	  
-    sprites.drawExternalMask(this->getX(), this->getY(), bitmap, mask, frame, frame);
-    sprites.drawOverwrite(this->getX(), this->getY(), bitmap, frame);
+    _sprites.drawExternalMask(this->getX(), this->getY(), bitmap, mask, frame, frame);
+    _sprites.drawOverwrite(this->getX(), this->getY(), bitmap, frame);
 	  
-    renderRequired = false;
+    _renderRequired = false;
       
   }
+  
 }
 

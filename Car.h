@@ -7,10 +7,10 @@
 class Car {
 
    public:
-	   Car();
+	   Car(Sprites sprites);
      Rect getOuterRect();
      Rect getInnerRect();
-     void renderImage(Sprites sprite, int16_t frame);
+     void renderImage(int16_t frame);
      void scroll(byte pixels);
      
      int getX();
@@ -30,12 +30,14 @@ class Car {
 
      const uint8_t *bitmap;
      const uint8_t *mask;
+     const Car* cars[];
      
    private:
-     bool renderRequired;
-     int x;               // factor of 10
-     int y;               // factor of 10
-     int speed;           // factor of 10
-     bool enabled;
+     bool _renderRequired;
+     int _x;               // factor of 10
+     int _y;               // factor of 10
+     int _speed;           // factor of 10
+     bool _enabled;
+     Sprites _sprites;
 };
 #endif
