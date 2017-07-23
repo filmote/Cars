@@ -8,14 +8,16 @@
 class Car {
 
    public:
-	   Car(String name);
+	   Car(byte name);
      bool operator==(Car &rhs)const; 
      bool operator!=(Car &rhs)const; 
 
      void debug();
 
      Rect getRect();
+     Rect getRect(int x, int y);
      void renderImage(int16_t frame);
+     void clearImage(int16_t frame);
      void scroll(byte pixels);
      
      int getX();
@@ -23,7 +25,7 @@ class Car {
      int getSpeed();
      bool getEnabled();
      bool getRenderRequired();
-     String getName();
+     byte getName();
 
      void setX(int value);
      void setY(int value);
@@ -32,7 +34,7 @@ class Car {
      void setRenderRequired(bool value);
      void setSprites(Sprites value);
      void setArduboy(Arduboy2 value);
-     void setCars(Car* value);
+     void setCars(Car** value);
 
      int16_t getWidth();
      int16_t getHeight();
@@ -46,10 +48,10 @@ class Car {
      int _y;               // factor of 10
      int _speed;           // factor of 10
      bool _enabled;
-     String _name;
+     byte _name;
      Sprites _sprites;
      Arduboy2 _arduboy;
-     Car* _cars;
+     Car** _cars;
 
 };
 #endif
