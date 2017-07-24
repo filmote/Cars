@@ -32,9 +32,9 @@ class Car {
      void setSpeed(int value);
      void setEnabled(bool value);
      void setRenderRequired(bool value);
-     void setSprites(Sprites value);
-     void setArduboy(Arduboy2 value);
-     void setCars(Car** value);
+     void setSprites(const Sprites *value);
+     void setArduboy(const Arduboy2 *value);
+     void setCars(const Car** value);
 
      int16_t getWidth();
      int16_t getHeight();
@@ -49,9 +49,9 @@ class Car {
      int _speed;           // factor of 10
      bool _enabled;
      byte _name;
-     Sprites _sprites;
-     Arduboy2 _arduboy;
-     Car** _cars;
+     const Sprites* _sprites;
+     const Arduboy2* _arduboy;
+     const Car** _cars;
 
 };
 #endif

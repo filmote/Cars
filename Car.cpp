@@ -79,15 +79,14 @@ void Car::scroll(byte pixels) {
   int x = _x - (pixels * 10) - _speed;
   int y = _y;
 
-  for (int i = 0; i < 3; ++i) {
+  for (int i = 0; i < 3; i++) {
 
     Car * car = _cars[i];
 
     if (*car != *this) {
     
-      if (_arduboy.collide(car->getRect(), this->getRect(_x, _y))) {
+      if (_arduboy->collide(car->getRect(), this->getRect(_x, _y))) {
 
-        Serial.println(F("- Collide ----------------------------"));
         car->debug();
         this->debug();
         noCollisions = false;
@@ -203,19 +202,19 @@ int Car::getHeight() {
 
 }
 
-void Car::setSprites(Sprites value) {
+void Car::setSprites(const Sprites *value) {
 
   _sprites = value;
 
 }
 
-void Car::setArduboy(Arduboy2 value) {
+void Car::setArduboy(const Arduboy2 *value) {
 
   _arduboy = value;
 
 }
 
-void Car::setCars(Car** value) {
+void Car::setCars(const Car** value) {
 
   _cars = value;
 
@@ -239,7 +238,7 @@ Serial.println("");
 */
   if (_renderRequired && _enabled) {
 
-    _sprites.drawExternalMask(this->getX(), this->getY(), bitmap, mask, frame, frame);
+    _sprites->drawExternalMask(this->getX(), this->getY(), bitmap, mask, frame, frame);
     _renderRequired = false;
 
   }
@@ -257,7 +256,7 @@ Serial.print(this->getEnabled());
 Serial.println("");
 */
   if (_speed != 0) {
-    _sprites.drawErase(this->getX(), this->getY(), bitmap, frame);
+    _sprites->drawErase(this->getX(), this->getY(), bitmap, frame);
     _renderRequired = true;
   }
   

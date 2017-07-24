@@ -18,7 +18,7 @@ void scrollBuffer(byte scrollIncrement) {
   memset (arduboy.sBuffer + BUFFER_ROW_6_START + WIDTH - scrollIncrement, 0, scrollIncrement);
   memset (arduboy.sBuffer + BUFFER_ROW_7_START + WIDTH - scrollIncrement, 0, scrollIncrement);
   
-
+/*
   // Scroll the upper and lower limit arrays also ..
   
   memmove (upperLimit, upperLimit + scrollIncrement, WIDTH - scrollIncrement);
@@ -26,5 +26,5 @@ void scrollBuffer(byte scrollIncrement) {
   
   memset (upperLimit + WIDTH - scrollIncrement, 0, scrollIncrement);
   memset (lowerLimit + WIDTH - scrollIncrement, 0, scrollIncrement);
-
+*/
 }
