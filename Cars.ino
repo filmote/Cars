@@ -41,7 +41,7 @@ struct Road {
   int randomNumber;
   int randomCount;
 }
-road = { 0, -16, 68, RoadType::Straight, 0, 2 };
+road = { 0, -16, 64, RoadType::Straight, 0, 2 };
 
 struct Player {
   byte x;
@@ -129,7 +129,7 @@ void loop() {
   if (arduboy.pressed(LEFT_BUTTON) && player.x > 0)                         { player.x--; }
   if (arduboy.pressed(RIGHT_BUTTON) && player.x < 64)                       { player.x++; }
  
-  scrollBuffer(scrollIncrement);
+  //scrollBuffer(scrollIncrement);
 
   drawScenery();
   
@@ -179,7 +179,7 @@ void drawScenery() {
         road.randomNumber = random(0,3);
       }
 
-      road.randomCount = random(4,8);
+      road.randomCount = random(2,6);
       
     }
 
@@ -191,14 +191,14 @@ void drawScenery() {
         break;
         
       case (int)RoadType::Up:
-        if (road.y > -20) {
+        if (road.y > -18) {
           road.y-=2;
           road.type = RoadType::Up;
         }
         break;
         
       case (int)RoadType::Down:
-        if (road.y < -8) {   // height = 64, -4 height = 72, -4 height = 68, -8
+        if (road.y < -6) {   // height = 64, -2 height = 72, -4 height = 68, -10
           road.y+=2;
           road.type = RoadType::Down;
         }
