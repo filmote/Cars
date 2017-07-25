@@ -9,8 +9,8 @@ class Car {
 
    public:
 	   Car(uint8_t name);
-     bool operator==(Car &rhs)const; 
-     bool operator!=(Car &rhs)const; 
+     bool operator==(const Car &rhs)const; 
+     bool operator!=(const Car &rhs)const; 
 
      void debug();
 

@@ -12,11 +12,11 @@ Car::Car(uint8_t name) {
 
 }
 
-bool Car::operator==(Car& rhs)const {
+bool Car::operator==(const Car& rhs)const {
   return (this->getName() == rhs.getName());
 }
 
-bool Car::operator!=(Car& rhs)const {
+bool Car::operator!=(const Car& rhs)const {
   return (this->getName() != rhs.getName());
 }
 
