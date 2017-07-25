@@ -49,9 +49,9 @@ class Car {
      int _speed;           // factor of 10
      bool _enabled;
      byte _name;
-//     const Sprites* _sprites;
+//     const Sprites *_sprites;
      Arduboy2 &_arduboy;
-     const Car* _cars;
+     const Car *_cars;
 
 };
 #endif

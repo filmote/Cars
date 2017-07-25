@@ -63,7 +63,7 @@ Car car3 = Car(3);
 const byte* car_images[] = { car_01,     car_02,     car_03,     car_04,     car_05,     car_06,     car_07,     car_08 };
 const byte* car_masks[] =  { mask_20_12, mask_19_12, mask_16_10, mask_19_12, mask_18_10, mask_17_13, mask_17_14, mask_19_15 };
 //Car* cars[] = { &car1, &car2, &car3 };
-Car cars[3] = { 1, 2, 3};
+Car cars[3] = { 41, 42, 43};
 byte idx = 0; // scratch variable.
 
 void setup() {
@@ -75,9 +75,9 @@ void setup() {
   cars[0].setArduboy(arduboy);
   cars[0].setCars(cars);
   cars[0].setX(80);
-  cars[0].setY(48);
-  cars[0].bitmap = car_images[7];
-  cars[0].mask = car_masks[7];
+  cars[0].setY(16);
+  cars[0].bitmap = car_images[2];
+  cars[0].mask = car_masks[2];
   cars[0].setSpeed(-4);
   cars[0].setEnabled(true);
   cars[0].renderImage(frame);
@@ -86,8 +86,8 @@ void setup() {
   cars[1].setCars(cars);
   cars[1].setX(128);
   cars[1].setY(32);
-  cars[1].bitmap = car_images[4];
-  cars[1].mask = car_masks[4];
+  cars[1].bitmap = car_images[3];
+  cars[1].mask = car_masks[3];
   cars[1].setEnabled(true);
   cars[1].setSpeed(-10);
   cars[1].renderImage(frame);
@@ -95,13 +95,16 @@ void setup() {
   cars[2].setArduboy(arduboy);
   cars[2].setCars(cars);
   cars[2].setX(128);
-  cars[2].setY(16);
-  cars[2].bitmap = car_03;
-  cars[2].mask = mask_16_10;
+  cars[2].setY(48);
+  cars[2].bitmap = car_images[4];
+  cars[2].mask = car_masks[4];
   cars[2].setSpeed(-8);
   cars[2].setEnabled(true);
   cars[2].renderImage(frame);
 
+//  cars[0].setCars(cars);
+//  cars[1].setCars(cars);
+//  cars[2].setCars(cars);
   for (int x = 0; x < 17; x++) {
 
     roadElements[x].upperLimit = -16;
@@ -135,11 +138,18 @@ void loop() {
   //scrollBuffer(scrollIncrement);
 
   drawScenery();
-  
+  Serial.println("===----====-----===----===");
+  Serial.println("Cars[0] 41");
   cars[0].scroll(scrollIncrement);
+  Serial.println("Cars[1] 42");
   cars[1].scroll(scrollIncrement);
+  Serial.println("Cars[2] 43");
   cars[2].scroll(scrollIncrement);
 
+//Serial.println("_____");
+//Serial.println(cars[0].getName());
+//Serial.println(cars[1].getName());
+//Serial.println(cars[2].getName());
   if (!cars[0].getEnabled()) { 
     idx = random(0, NUMBER_OF_CAR_IMAGES);
     cars[0].setX(WIDTH);
@@ -154,7 +164,7 @@ void loop() {
     cars[1].setEnabled(true);
     cars[1].bitmap = car_images[idx]; 
     cars[1].mask = car_masks[idx]; 
-  }
+ }
   
   if (!cars[2].getEnabled()) {  
     idx = random(0, NUMBER_OF_CAR_IMAGES);
@@ -169,9 +179,11 @@ void loop() {
   cars[2].renderImage(frame);
   
   sprites.drawExternalMask(player.x, player.y, car_player, mask_16_14, frame, frame);
+
+
   
   arduboy.display();
-//  delay(20);
+  delay(10);
 }
 
 void drawScenery() {
@@ -259,7 +271,7 @@ void drawScenery() {
   }
 
   road.x+=scrollIncrement;
-  delay(10);
+  //delay(10);
   
 }
 

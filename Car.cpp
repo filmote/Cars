@@ -79,15 +79,15 @@ void Car::scroll(byte pixels) {
   int16_t x = _x - (pixels * 10) - _speed;
   int16_t y = _y;
 
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 3; ++i) {
 
-    const Car &car = _cars[i];
+    Car car = _cars[i];
+    car.debug();
 
     if (car != *this) {
     
       if (_arduboy.collide(car.getRect(), this->getRect(_x, _y))) {
 
-        car.debug();
         this->debug();
         noCollisions = false;
         break;
@@ -118,6 +118,7 @@ void Car::scroll(byte pixels) {
     Serial.print(this->getName());
     Serial.println(" enabled = false");
   }
+  
 }
 
 int16_t Car::getX() {
@@ -227,7 +228,7 @@ byte Car::getName() {
 }
 
 void Car::renderImage(int16_t frame) {
-/* 
+  
 Serial.print("renderImage - Car_");
 Serial.print(this->getName());
 Serial.print(", renderRequired:");
@@ -235,7 +236,7 @@ Serial.print(this->getRenderRequired());
 Serial.print(", enabled:");
 Serial.print(this->getEnabled());
 Serial.println("");
-*/
+
   if (_renderRequired && _enabled) {
 
     Sprites::drawExternalMask(this->getX(), this->getY(), bitmap, mask, frame, frame);
