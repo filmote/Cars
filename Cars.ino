@@ -14,15 +14,19 @@ Sprites sprites;
 #define BUFFER_ROW_6_START    BUFFER_ROW_5_START + WIDTH
 #define BUFFER_ROW_7_START    BUFFER_ROW_6_START + WIDTH
 
-#define NUMBER_OF_CAR_IMAGES  1
+#define NUMBER_OF_CAR_IMAGES  8
 #define NUMBER_OF_CARS        3
+
 const int scrollIncrement = 2;
 int frame = 0;
 
 enum class RoadType : uint8_t {
   Straight,
   Up,  
-  Down
+  Down,
+  Count,
+  First = Straight,
+  Last = Down,
 };
 
 struct RoadElement {
@@ -60,6 +64,7 @@ const byte* car_images[] = { car_01,     car_02,     car_03,     car_04,     car
 const byte* car_masks[] =  { mask_20_12, mask_19_12, mask_16_10, mask_19_12, mask_18_10, mask_17_13, mask_17_14, mask_19_15 };
 //Car* cars[] = { &car1, &car2, &car3 };
 Car cars[3] = { 1, 2, 3};
+byte idx = 0; // scratch variable.
 
 void setup() {
   
@@ -136,18 +141,27 @@ void loop() {
   cars[2].scroll(scrollIncrement);
 
   if (!cars[0].getEnabled()) { 
+    idx = random(0, NUMBER_OF_CAR_IMAGES);
     cars[0].setX(WIDTH);
     cars[0].setEnabled(true);
+    cars[0].bitmap = car_images[idx]; 
+    cars[0].mask = car_masks[idx]; 
   }
 
   if (!cars[1].getEnabled()) {  
+    idx = random(0, NUMBER_OF_CAR_IMAGES);
     cars[1].setX(WIDTH);
     cars[1].setEnabled(true);
+    cars[1].bitmap = car_images[idx]; 
+    cars[1].mask = car_masks[idx]; 
   }
   
   if (!cars[2].getEnabled()) {  
+    idx = random(0, NUMBER_OF_CAR_IMAGES);
     cars[2].setX(WIDTH);
     cars[2].setEnabled(true);
+    cars[2].bitmap = car_images[idx]; 
+    cars[2].mask = car_masks[idx]; 
   }
   
   cars[0].renderImage(frame);
@@ -174,10 +188,10 @@ void drawScenery() {
         road.randomNumber = 0;
       }
       else {
-        road.randomNumber = random(0,3);
+        road.randomNumber = random((uint8_t)RoadType::First, (uint8_t)RoadType::Count);   
       }
 
-      road.randomCount = random(2,6);
+      road.randomCount = random(2, 6);
       
     }
 
