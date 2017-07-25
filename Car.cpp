@@ -3,7 +3,7 @@
 #include "Sprites.h"
 #include "Arduino.h"
 
-Car::Car(byte name) {
+Car::Car(uint8_t name) {
 
   _name = name;
   _renderRequired = true;
@@ -76,18 +76,18 @@ void Car::scroll(byte pixels) {
 
   bool noCollisions = true;
 
-  int x = _x - (pixels * 10) - _speed;
-  int y = _y;
+  int16_t x = _x - (pixels * 10) - _speed;
+  int16_t y = _y;
 
   for (int i = 0; i < 3; i++) {
 
-    Car * car = _cars[i];
+    const Car &car = _cars[i];
 
-    if (*car != *this) {
+    if (car != *this) {
     
-      if (_arduboy->collide(car->getRect(), this->getRect(_x, _y))) {
+      if (_arduboy.collide(car.getRect(), this->getRect(_x, _y))) {
 
-        car->debug();
+        car.debug();
         this->debug();
         noCollisions = false;
         break;
@@ -120,20 +120,20 @@ void Car::scroll(byte pixels) {
   }
 }
 
-int Car::getX() {
+int16_t Car::getX() {
 
   return _x / 10;
 
 }
 
-void Car::setX(int value) {
+void Car::setX(int16_t value) {
 
   _x = value * 10;
   _renderRequired = true;
 
 }
 
-int Car::getY() {
+int16_t Car::getY() {
 
   return _y / 10;
 
@@ -147,13 +147,13 @@ void Car::setY(int value) {
 }
 
 
-int Car::getSpeed() {
+int16_t Car::getSpeed() {
 
   return _speed;
 
 }
 
-void Car::setSpeed(int value) {
+void Car::setSpeed(int16_t value) {
 
   _speed = value;
   _renderRequired = true;
@@ -196,25 +196,25 @@ int Car::getWidth() {
 
 }
 
-int Car::getHeight() {
+int16_t Car::getHeight() {
 
   return pgm_read_byte(bitmap + 1);
 
 }
 
-void Car::setSprites(const Sprites *value) {
+/*void Car::setSprites(const Sprites *value) {
 
   _sprites = value;
 
-}
+}*/
 
-void Car::setArduboy(const Arduboy2 *value) {
+void Car::setArduboy(Arduboy2 &value) {
 
   _arduboy = value;
 
 }
 
-void Car::setCars(const Car** value) {
+void Car::setCars(const Car *value) {
 
   _cars = value;
 
@@ -238,7 +238,7 @@ Serial.println("");
 */
   if (_renderRequired && _enabled) {
 
-    _sprites->drawExternalMask(this->getX(), this->getY(), bitmap, mask, frame, frame);
+    Sprites::drawExternalMask(this->getX(), this->getY(), bitmap, mask, frame, frame);
     _renderRequired = false;
 
   }
@@ -256,7 +256,7 @@ Serial.print(this->getEnabled());
 Serial.println("");
 */
   if (_speed != 0) {
-    _sprites->drawErase(this->getX(), this->getY(), bitmap, frame);
+    Sprites::drawErase(this->getX(), this->getY(), bitmap, frame);
     _renderRequired = true;
   }
   

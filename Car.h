@@ -8,7 +8,7 @@
 class Car {
 
    public:
-	   Car(byte name);
+	   Car(uint8_t name);
      bool operator==(Car &rhs)const; 
      bool operator!=(Car &rhs)const; 
 
@@ -20,9 +20,9 @@ class Car {
      void clearImage(int16_t frame);
      void scroll(byte pixels);
      
-     int getX();
-     int getY();
-     int getSpeed();
+     int16_t getX();
+     int16_t getY();
+     int16_t getSpeed();
      bool getEnabled();
      bool getRenderRequired();
      byte getName();
@@ -32,9 +32,9 @@ class Car {
      void setSpeed(int value);
      void setEnabled(bool value);
      void setRenderRequired(bool value);
-     void setSprites(const Sprites *value);
-     void setArduboy(const Arduboy2 *value);
-     void setCars(const Car** value);
+//     void setSprites(const Sprites *value);
+     void setArduboy(Arduboy2 &value);
+     void setCars(const Car *value);
 
      int16_t getWidth();
      int16_t getHeight();
@@ -49,9 +49,9 @@ class Car {
      int _speed;           // factor of 10
      bool _enabled;
      byte _name;
-     const Sprites* _sprites;
-     const Arduboy2* _arduboy;
-     const Car** _cars;
+//     const Sprites* _sprites;
+     Arduboy2 &_arduboy;
+     const Car* _cars;
 
 };
 #endif

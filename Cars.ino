@@ -19,7 +19,7 @@ Sprites sprites;
 const int scrollIncrement = 2;
 int frame = 0;
 
-enum class RoadType {
+enum class RoadType : uint8_t {
   Straight,
   Up,  
   Down
@@ -51,14 +51,15 @@ struct Player {
 }
 player = {0, 24, 14, 16};
 
-
+/*
 Car car1 = Car(1);
 Car car2 = Car(2);
 Car car3 = Car(3);
-
+*/
 const byte* car_images[] = { car_01,     car_02,     car_03,     car_04,     car_05,     car_06,     car_07,     car_08 };
 const byte* car_masks[] =  { mask_20_12, mask_19_12, mask_16_10, mask_19_12, mask_18_10, mask_17_13, mask_17_14, mask_19_15 };
-Car* cars[] = { &car1, &car2, &car3 };
+//Car* cars[] = { &car1, &car2, &car3 };
+Car cars[3] = { 1, 2, 3};
 
 void setup() {
   
@@ -66,38 +67,35 @@ void setup() {
   arduboy.setFrameRate(60);
   arduboy.initRandomSeed();
   
-  car1.setSprites(&sprites);
-  car1.setArduboy(&arduboy);
-  car1.setCars(cars);
-  car1.setX(80);
-  car1.setY(48);
-  car1.bitmap = car_images[7];
-  car1.mask = car_masks[7];
-  car1.setSpeed(-4);
-  car1.setEnabled(true);
-  car1.renderImage(frame);
+  cars[0].setArduboy(arduboy);
+  cars[0].setCars(cars);
+  cars[0].setX(80);
+  cars[0].setY(48);
+  cars[0].bitmap = car_images[7];
+  cars[0].mask = car_masks[7];
+  cars[0].setSpeed(-4);
+  cars[0].setEnabled(true);
+  cars[0].renderImage(frame);
   
-  car2.setSprites(&sprites);
-  car2.setArduboy(&arduboy);
-  car2.setCars(cars);
-  car2.setX(128);
-  car2.setY(32);
-  car2.bitmap = car_images[4];
-  car2.mask = car_masks[4];
-  car2.setEnabled(true);
-  car2.setSpeed(-10);
-  car2.renderImage(frame);
+  cars[1].setArduboy(arduboy);
+  cars[1].setCars(cars);
+  cars[1].setX(128);
+  cars[1].setY(32);
+  cars[1].bitmap = car_images[4];
+  cars[1].mask = car_masks[4];
+  cars[1].setEnabled(true);
+  cars[1].setSpeed(-10);
+  cars[1].renderImage(frame);
   
-  car3.setSprites(&sprites);
-  car3.setArduboy(&arduboy);
-  car3.setCars(cars);
-  car3.setX(128);
-  car3.setY(16);
-  car3.bitmap = car_03;
-  car3.mask = mask_16_10;
-  car3.setSpeed(-8);
-  car3.setEnabled(true);
-  car3.renderImage(frame);
+  cars[2].setArduboy(arduboy);
+  cars[2].setCars(cars);
+  cars[2].setX(128);
+  cars[2].setY(16);
+  cars[2].bitmap = car_03;
+  cars[2].mask = mask_16_10;
+  cars[2].setSpeed(-8);
+  cars[2].setEnabled(true);
+  cars[2].renderImage(frame);
 
   for (int x = 0; x < 17; x++) {
 
@@ -120,9 +118,9 @@ void loop() {
 
 
   sprites.drawErase(player.x, player.y, car_player, frame);
-  car1.clearImage(frame);
-  car2.clearImage(frame);
-  car3.clearImage(frame);
+  cars[0].clearImage(frame);
+  cars[1].clearImage(frame);
+  cars[2].clearImage(frame);
 
   if (arduboy.pressed(UP_BUTTON) && player.y > 0)                           { player.y--; }
   if (arduboy.pressed(DOWN_BUTTON) && player.y < HEIGHT - player.height)    { player.y++; }
@@ -133,28 +131,28 @@ void loop() {
 
   drawScenery();
   
-  car1.scroll(scrollIncrement);
-  car2.scroll(scrollIncrement);
-  car3.scroll(scrollIncrement);
+  cars[0].scroll(scrollIncrement);
+  cars[1].scroll(scrollIncrement);
+  cars[2].scroll(scrollIncrement);
 
-  if (!car1.getEnabled()) { 
-    car1.setX(WIDTH);
-    car1.setEnabled(true);
+  if (!cars[0].getEnabled()) { 
+    cars[0].setX(WIDTH);
+    cars[0].setEnabled(true);
   }
 
-  if (!car2.getEnabled()) {  
-    car2.setX(WIDTH);
-    car2.setEnabled(true);
+  if (!cars[1].getEnabled()) {  
+    cars[1].setX(WIDTH);
+    cars[1].setEnabled(true);
   }
   
-  if (!car3.getEnabled()) {  
-    car3.setX(WIDTH);
-    car3.setEnabled(true);
+  if (!cars[2].getEnabled()) {  
+    cars[2].setX(WIDTH);
+    cars[2].setEnabled(true);
   }
   
-  car1.renderImage(frame);
-  car2.renderImage(frame);
-  car3.renderImage(frame);
+  cars[0].renderImage(frame);
+  cars[1].renderImage(frame);
+  cars[2].renderImage(frame);
   
   sprites.drawExternalMask(player.x, player.y, car_player, mask_16_14, frame, frame);
   
@@ -185,19 +183,19 @@ void drawScenery() {
 
     road.x = 0;
 
-    switch (road.randomNumber) {
+    switch ((RoadType)road.randomNumber) {
       
-      case (int)RoadType::Straight:
+      case RoadType::Straight:
         break;
         
-      case (int)RoadType::Up:
+      case RoadType::Up:
         if (road.y > -18) {
           road.y-=2;
           road.type = RoadType::Up;
         }
         break;
         
-      case (int)RoadType::Down:
+      case RoadType::Down:
         if (road.y < -6) {   // height = 64, -2 height = 72, -4 height = 68, -10
           road.y+=2;
           road.type = RoadType::Down;
