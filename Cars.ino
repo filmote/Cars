@@ -40,16 +40,16 @@ struct Road {
   RoadType type;
   int randomNumber;
   int randomCount;
-}
-road = { 0, -16, 64, RoadType::Straight, 0, 2 };
+};
+Road road = { 0, -16, 64, RoadType::Straight, 0, 2 };
 
 struct Player {
   byte x;
   byte y;
   const byte height;
   const byte width;
-}
-player = {0, 24, 14, 16};
+};
+Player player = {0, 24, 14, 16};
 
 /*
 Car car1 = Car(1);
@@ -265,3 +265,24 @@ void debugRoad() {
 
 }
 
+void scrollBuffer(byte scrollIncrement) { 
+
+  memmove (arduboy.sBuffer + BUFFER_ROW_0_START, arduboy.sBuffer + BUFFER_ROW_0_START + scrollIncrement, WIDTH - scrollIncrement);
+  memmove (arduboy.sBuffer + BUFFER_ROW_1_START, arduboy.sBuffer + BUFFER_ROW_1_START + scrollIncrement, WIDTH - scrollIncrement);
+  memmove (arduboy.sBuffer + BUFFER_ROW_2_START, arduboy.sBuffer + BUFFER_ROW_2_START + scrollIncrement, WIDTH - scrollIncrement);
+  memmove (arduboy.sBuffer + BUFFER_ROW_3_START, arduboy.sBuffer + BUFFER_ROW_3_START + scrollIncrement, WIDTH - scrollIncrement);
+  memmove (arduboy.sBuffer + BUFFER_ROW_4_START, arduboy.sBuffer + BUFFER_ROW_4_START + scrollIncrement, WIDTH - scrollIncrement);
+  memmove (arduboy.sBuffer + BUFFER_ROW_5_START, arduboy.sBuffer + BUFFER_ROW_5_START + scrollIncrement, WIDTH - scrollIncrement);
+  memmove (arduboy.sBuffer + BUFFER_ROW_6_START, arduboy.sBuffer + BUFFER_ROW_6_START + scrollIncrement, WIDTH - scrollIncrement);
+  memmove (arduboy.sBuffer + BUFFER_ROW_7_START, arduboy.sBuffer + BUFFER_ROW_7_START + scrollIncrement, WIDTH - scrollIncrement);
+
+  memset (arduboy.sBuffer + BUFFER_ROW_0_START + WIDTH - scrollIncrement, 0, scrollIncrement);
+  memset (arduboy.sBuffer + BUFFER_ROW_1_START + WIDTH - scrollIncrement, 0, scrollIncrement);
+  memset (arduboy.sBuffer + BUFFER_ROW_2_START + WIDTH - scrollIncrement, 0, scrollIncrement);
+  memset (arduboy.sBuffer + BUFFER_ROW_3_START + WIDTH - scrollIncrement, 0, scrollIncrement);
+  memset (arduboy.sBuffer + BUFFER_ROW_4_START + WIDTH - scrollIncrement, 0, scrollIncrement);
+  memset (arduboy.sBuffer + BUFFER_ROW_5_START + WIDTH - scrollIncrement, 0, scrollIncrement);
+  memset (arduboy.sBuffer + BUFFER_ROW_6_START + WIDTH - scrollIncrement, 0, scrollIncrement);
+  memset (arduboy.sBuffer + BUFFER_ROW_7_START + WIDTH - scrollIncrement, 0, scrollIncrement);
+  
+}
