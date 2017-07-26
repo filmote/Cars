@@ -3,7 +3,7 @@
 #include "Sprites.h"
 #include "Enums.h"
 
-Car::Car(uint8_t name, Arduboy2 *arduboy, int16_t x, int16_t y, int16_t speed, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType) {
+Car::Car(uint8_t name, Arduboy2 &arduboy, int16_t x, int16_t y, int16_t speed, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType) {
 
   _name = name;
   _renderRequired = true;
@@ -11,7 +11,7 @@ Car::Car(uint8_t name, Arduboy2 *arduboy, int16_t x, int16_t y, int16_t speed, c
   _y = y;
   _enabled = false;
   _speed = speed;
-  _arduboy = arduboy;
+  _arduboy = &arduboy;
   _bitmap = bitmapRef;
   _mask = maskRef;
   _cars = cars;
@@ -19,39 +19,39 @@ Car::Car(uint8_t name, Arduboy2 *arduboy, int16_t x, int16_t y, int16_t speed, c
 
 }
 
-bool Car::operator==(const Car& rhs)const {
+bool Car::operator==(const Car& rhs) const {
   return (this->getName() == rhs.getName());
 }
 
-bool Car::operator!=(const Car& rhs)const {
+bool Car::operator!=(const Car& rhs) const {
   return (this->getName() != rhs.getName());
 }
 
-void Car::debug() {
+void Car::debug() const {
 
-  Serial.print("Car_");
+  Serial.print(F("Car_"));
   Serial.print(this->getName());
-  Serial.print(": x=");
+  Serial.print(F(": x="));
   Serial.print(this->getX());
-  Serial.print(", y=");
+  Serial.print(F(", y="));
   Serial.print(this->getY());
-  Serial.print(", width=");
+  Serial.print(F(", width="));
   Serial.print(this->getWidth());
-  Serial.print(", height=");
+  Serial.print(F(", height="));
   Serial.print(this->getHeight());
-  Serial.print(", xMax=");
+  Serial.print(F(", xMax="));
   Serial.print(this->getX() + this->getWidth());
-  Serial.print(", yMax=");
+  Serial.print(F(", yMax="));
   Serial.print(this->getY() + this->getHeight());
-  Serial.print(", rect=");
+  Serial.print(F(", rect="));
   Serial.print(this->getRect().x);
-  Serial.print(" ");
+  Serial.print(' ');
   Serial.print(this->getRect().y);
-  Serial.print(" ");
+  Serial.print(' ');
   Serial.print(this->getRect().width);
-  Serial.print(" ");
+  Serial.print(' ');
   Serial.print(this->getRect().height);
-  Serial.println(" ");
+  Serial.println(' ');
 
 }
 
@@ -59,7 +59,7 @@ void Car::debug() {
 /*
  *  Get rectangle of image.
  */
-Rect Car::getRect() {
+Rect Car::getRect() const {
 
   return (Rect){this->getX(), this->getY(), pgm_read_byte(_bitmap), pgm_read_byte(_bitmap[1])};
 
@@ -68,7 +68,7 @@ Rect Car::getRect() {
 /*
  *  Get rectangle of image.
  */
-Rect Car::getRect(int16_t x, int16_t y) {
+Rect Car::getRect(int16_t x, int16_t y) const {
 
   return (Rect){(x / 10), (y / 10), pgm_read_byte(_bitmap), pgm_read_byte(_bitmap[1])};
 
@@ -182,14 +182,14 @@ void Car::move(uint8_t pixels, uint8_t roadUpper, uint8_t roadLower) {
 
   _enabled = (this->getWidth() + this->getX() > 0);
   if (!_enabled) {
-    Serial.print("Car_");
+    Serial.print(F("Car_"));
     Serial.print(this->getName());
-    Serial.println(" enabled = false");
+    Serial.println(F(" enabled = false"));
   }
   
 }
 
-const int16_t Car::getX() {
+const int16_t Car::getX() const {
 
   return _x / 10;
 
@@ -202,7 +202,7 @@ void Car::setX(const int16_t value) {
 
 }
 
-const int16_t Car::getY() {
+const int16_t Car::getY() const {
 
   return _y / 10;
 
@@ -216,7 +216,7 @@ void Car::setY(const int16_t value) {
 }
 
 
-const int16_t Car::getSpeed() {
+const int16_t Car::getSpeed() const {
 
   return _speed;
 
@@ -230,7 +230,7 @@ void Car::setSpeed(const int16_t value) {
 }
 
 
-const bool Car::getEnabled() {
+const bool Car::getEnabled() const {
 
   return _enabled;
 
@@ -246,7 +246,7 @@ void Car::setEnabled(const bool value) {
 
 
 
-const bool Car::getRenderRequired() {
+const bool Car::getRenderRequired() const {
 
   return _renderRequired;
 
@@ -259,13 +259,13 @@ void Car::setRenderRequired(const bool value) {
 
 }
 
-int Car::getWidth() {
+int Car::getWidth() const {
 
-  return pgm_read_byte(_bitmap);
+  return pgm_read_byte(&_bitmap[0]);
 
 }
 
-int16_t Car::getHeight() {
+int16_t Car::getHeight() const {
 
   return pgm_read_byte(&_bitmap[1]);
 
@@ -290,7 +290,7 @@ void Car::setCars(const Car *value) {
 
 }
 */
-const byte Car::getName() {
+const byte Car::getName() const {
 
   return _name;
 
@@ -312,13 +312,13 @@ void Car::setMask(const uint8_t *value) {
 void Car::renderImage(int16_t frame) {
   
   
-Serial.print("renderImage - Car_");
+Serial.print(F("renderImage - Car_"));
 Serial.print(this->getName());
-Serial.print(", renderRequired:");
+Serial.print(F(", renderRequired:"));
 Serial.print(this->getRenderRequired());
-Serial.print(", enabled:");
+Serial.print(F(", enabled:"));
 Serial.print(this->getEnabled());
-Serial.println("");
+Serial.println();
 
   if (_renderRequired && _enabled) {
 
