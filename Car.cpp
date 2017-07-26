@@ -3,7 +3,7 @@
 #include "Sprites.h"
 #include "Enums.h"
 
-Car::Car(uint8_t name, Arduboy2 &arduboy, int16_t x, int16_t y, int16_t speed, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType) {
+Car::Car(uint8_t name, Arduboy2 *arduboy, int16_t x, int16_t y, int16_t speed, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType) {
 
   _name = name;
   _renderRequired = true;
@@ -85,7 +85,7 @@ void Car::move(uint8_t pixels, uint8_t roadUpper, uint8_t roadLower) {
 
   int16_t x = _x - (pixels * 10) - _speed;
   int16_t y = _y;
-
+/*
   switch (_steeringType) {
 
     case (SteeringType::FollowRoad):
@@ -126,7 +126,7 @@ void Car::move(uint8_t pixels, uint8_t roadUpper, uint8_t roadLower) {
       break;
 
     case (SteeringType::Random):
- /*
+ / *
     road.randomCount--;
     
     if (road.randomCount == 0) {
@@ -141,11 +141,11 @@ void Car::move(uint8_t pixels, uint8_t roadUpper, uint8_t roadLower) {
       road.randomCount = random(2, 6);
       
     }
-*/
+* /
       break;
       
   }
-
+*/
   for (uint8_t i = 0; i < 3; ++i) {
 
     const Car &car = _cars[i];
