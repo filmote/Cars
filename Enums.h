@@ -20,8 +20,8 @@ enum class SteeringType : uint8_t {
 };
 
 struct RoadElement {
-  uint8_t upperLimit;
-  uint8_t lowerLimit;
+  int16_t upperLimit;
+  int16_t lowerLimit;
   RoadType roadType;
 };
 

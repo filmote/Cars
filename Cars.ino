@@ -3,7 +3,7 @@
 #include "Images.h" 
 #include "Enums.h"
 
-Arduboy2 arduboy;
+Arduboy2 arduboy; 
 
 #define BUFFER_ROW_0_START    0
 #define BUFFER_ROW_1_START    BUFFER_ROW_0_START + WIDTH
@@ -46,11 +46,11 @@ void setup() {
   cars[1].renderImage(frame);
   cars[2].renderImage(frame);
 
-  for (int x = 0; x < 17; x++) {
+  for (idx = 0; idx < 17; ++idx) {
 
-    roadElements[x].upperLimit = -16;
-    roadElements[x].lowerLimit = road.height + -16;
-    roadElements[x].roadType = RoadType::Straight;
+    roadElements[idx].upperLimit = -16;
+    roadElements[idx].lowerLimit = road.height + -16;
+    roadElements[idx].roadType = RoadType::Straight;
     
   }
 
@@ -128,9 +128,6 @@ void loop() {
 
 void drawScenery() {
 
-  int8_t upperLimitOffset = 0;
-  int8_t lowerLimitOffset = 0;
-
   if (road.x == 8) {
       
     road.type = RoadType::Straight;
@@ -174,13 +171,13 @@ void drawScenery() {
     }
 
      
-//    Serial.print("Before : ");
+//   Serial.print("Before : ");
 //    debugRoad();
    
     int pt = roadElements;
     memmove (pt, pt + sizeof(RoadElement), 16 * sizeof(RoadElement));
 
-//    Serial.print("After  : ");
+//   Serial.print("After  : ");
 //    debugRoad();
 
 
@@ -191,7 +188,10 @@ void drawScenery() {
   }
 
   for (idx = 0; idx < 17; ++idx) {
-   
+ 
+    int8_t upperLimitOffset = 0;
+    int8_t lowerLimitOffset = 0;
+  
     switch (roadElements[idx].roadType) {
       
       case RoadType::Straight:
@@ -207,8 +207,8 @@ void drawScenery() {
         
     }
 
-    Sprites::drawOverwrite((idx * 8) - road.x, roadElements[idx].upperLimit, upper_road, frame);   
-    Sprites::drawOverwrite((idx * 8) - road.x, roadElements[idx].lowerLimit, lower_road, frame);   
+    Sprites::drawOverwrite((idx * 8) - road.x, roadElements[idx].upperLimit + upperLimitOffset, upper_road, frame);   
+    Sprites::drawOverwrite((idx * 8) - road.x, roadElements[idx].lowerLimit + lowerLimitOffset, lower_road, frame);   
 
   }
 
