@@ -12,8 +12,8 @@ Car::Car(uint8_t name, Arduboy2 &arduboy, int16_t x, int16_t y, int16_t speed, c
   _enabled = false;
   _speed = speed;
   _arduboy = arduboy;
-  bitmap = bitmapRef;
-  mask = maskRef;
+  _bitmap = bitmapRef;
+  _mask = maskRef;
   _cars = cars;
 
 }
@@ -56,26 +56,26 @@ void Car::debug() {
 
 
 /*
-   Get rectangle of image.
-*/
+ *  Get rectangle of image.
+ */
 Rect Car::getRect() {
 
-  return (Rect){this->getX(), this->getY(), pgm_read_byte(bitmap), pgm_read_byte(bitmap + 1)};
+  return (Rect){this->getX(), this->getY(), pgm_read_byte(_bitmap), pgm_read_byte(_bitmap[1])};
 
 }
 
 /*
-   Get rectangle of image.
-*/
-Rect Car::getRect(int x, int y) {
+ *  Get rectangle of image.
+ */
+Rect Car::getRect(int16_t x, int16_t y) {
 
-  return (Rect){(x / 10), (y / 10), pgm_read_byte(bitmap), pgm_read_byte(bitmap + 1)};
+  return (Rect){(x / 10), (y / 10), pgm_read_byte(_bitmap), pgm_read_byte(_bitmap[1])};
 
 }
 
 /*
-   Simply scrolling the images to the left does not force the image to be rendered again.
-*/
+ *  Simply scrolling the images to the left does not force the image to be rendered again.
+ */
 void Car::scroll(byte pixels) {
 //Serial.print("Scroll - Car_");
 //Serial.println(this->getName());
@@ -85,9 +85,9 @@ void Car::scroll(byte pixels) {
   int16_t x = _x - (pixels * 10) - _speed;
   int16_t y = _y;
 
-  for (int i = 0; i < 3; ++i) {
+  for (uint8_t i = 0; i < 3; ++i) {
 
-    const Car car = _cars[i];
+    const Car &car = _cars[i];
     car.debug();
 
     if (car != *this) {
@@ -146,7 +146,7 @@ const int16_t Car::getY() {
 
 }
 
-void Car::setY(const int value) {
+void Car::setY(const int16_t value) {
 
   _y = value * 10;
   _renderRequired = true;
@@ -199,13 +199,13 @@ void Car::setRenderRequired(const bool value) {
 
 int Car::getWidth() {
 
-  return pgm_read_byte(bitmap);
+  return pgm_read_byte(_bitmap);
 
 }
 
 int16_t Car::getHeight() {
 
-  return pgm_read_byte(bitmap + 1);
+  return pgm_read_byte(_bitmap[1]);
 
 }
 
@@ -221,19 +221,34 @@ void Car::setArduboy(Arduboy2 &value) {
 
 }
 */
+/*
 void Car::setCars(const Car *value) {
 
   _cars = value;
 
 }
-
+*/
 const byte Car::getName() {
 
   return _name;
 
 }
 
+
+void Car::setBitmap(const uint8_t *value) {
+
+  _bitmap = value;
+  
+}
+
+void Car::setMask(const uint8_t *value) {
+
+  _mask = value;
+  
+}
+
 void Car::renderImage(int16_t frame) {
+  
   
 Serial.print("renderImage - Car_");
 Serial.print(this->getName());
@@ -245,7 +260,7 @@ Serial.println("");
 
   if (_renderRequired && _enabled) {
 
-    Sprites::drawExternalMask(this->getX(), this->getY(), bitmap, mask, frame, frame);
+    Sprites::drawExternalMask(this->getX(), this->getY(), _bitmap, _mask, frame, frame);
     _renderRequired = false;
 
   }
@@ -263,7 +278,7 @@ Serial.print(this->getEnabled());
 Serial.println("");
 */
   if (_speed != 0) {
-    Sprites::drawErase(this->getX(), this->getY(), bitmap, frame);
+    Sprites::drawErase(this->getX(), this->getY(), _bitmap, frame);
     _renderRequired = true;
   }
   

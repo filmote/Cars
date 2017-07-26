@@ -27,20 +27,18 @@ class Car {
      const bool getRenderRequired();
      const byte getName();
 
-     void setX(const int value);
-     void setY(const int value);
-     void setSpeed(const int value);
+     void setX(const int16_t value);
+     void setY(const int16_t value);
+     void setSpeed(const int16_t value);
      void setEnabled(const bool value);
      void setRenderRequired(const bool value);
 //     void setSprites(const Sprites *value);
 //     void setArduboy(Arduboy2 &value);
-     void setCars(const Car *value);
+     void setBitmap(const uint8_t *value);
+     void setMask(const uint8_t *value);
 
      int16_t getWidth();
      int16_t getHeight();
-
-     const uint8_t *bitmap;
-     const uint8_t *mask;
      
    private:
      bool _renderRequired;
@@ -52,6 +50,9 @@ class Car {
 //     const Sprites *_sprites;
      Arduboy2 &_arduboy;
      const Car *_cars;
+
+     const uint8_t *_bitmap;
+     const uint8_t *_mask;
 
 };
 #endif

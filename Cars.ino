@@ -16,8 +16,8 @@ Arduboy2 arduboy;
 #define NUMBER_OF_CAR_IMAGES  8
 #define NUMBER_OF_CARS        3
 
-const int scrollIncrement = 2;
-int frame = 0;
+const uint8_t scrollIncrement = 2;
+uint8_t frame = 0;
 
 enum class RoadType : uint8_t {
   Straight,
@@ -29,48 +29,42 @@ enum class RoadType : uint8_t {
 };
 
 struct RoadElement {
-  int upperLimit;
-  int lowerLimit;
+  uint8_t upperLimit;
+  uint8_t lowerLimit;
   RoadType roadType;
 };
 
 RoadElement roadElements[17];
 
 struct Road {
-  int x;
-  int y;
-  int height;
+  int16_t x;
+  int16_t y;
+  int16_t height;
   RoadType type;
-  int randomNumber;
-  int randomCount;
+  uint8_t randomNumber;
+  uint8_t randomCount;
 };
 Road road = { 0, -16, 64, RoadType::Straight, 0, 2 };
 
 struct Player {
-  byte x;
-  byte y;
-  const byte height;
-  const byte width;
+  uint8_t x;
+  uint8_t y;
+  const uint8_t height;
+  const uint8_t width;
 };
 Player player = {0, 24, 14, 16};
 
-/*
-Car car1 = Car(1);
-Car car2 = Car(2);
-Car car3 = Car(3);
-*/
 const byte* car_images[] = { car_01,     car_02,     car_03,     car_04,     car_05,     car_06,     car_07,     car_08 };
 const byte* car_masks[] =  { mask_20_12, mask_19_12, mask_16_10, mask_19_12, mask_18_10, mask_17_13, mask_17_14, mask_19_15 };
 
-Car cars[3] = 
-{
-  {41, arduboy, 80, 16, -4, car_images[2], car_masks[2], cars},
-  {42, arduboy, 128, 32, -10, car_images[3], car_masks[3], cars},
-  {43, arduboy, 128, 48, -8, car_images[4], car_masks[4], cars}
+Car cars[3] = {
+  {1, arduboy, 80,  16, -4,  car_images[2], car_masks[2], cars},
+  {2, arduboy, 128, 32, -10, car_images[3], car_masks[3], cars},
+  {3, arduboy, 128, 48, -8,  car_images[4], car_masks[4], cars}
 };
 
 
-byte idx = 0; // scratch variable.
+uint8_t idx = 0; // scratch variable.
 
 void setup() {
   
@@ -78,18 +72,10 @@ void setup() {
   arduboy.setFrameRate(60);
   arduboy.initRandomSeed();
   
-  cars[0].setCars(cars);
   cars[0].renderImage(frame);
-  
-  cars[1].setCars(cars);
   cars[1].renderImage(frame);
-  
-  cars[2].setCars(cars);
   cars[2].renderImage(frame);
 
-//  cars[0].setCars(cars);
-//  cars[1].setCars(cars);
-//  cars[2].setCars(cars);
   for (int x = 0; x < 17; x++) {
 
     roadElements[x].upperLimit = -16;
@@ -124,11 +110,11 @@ void loop() {
 
   drawScenery();
   Serial.println("===----====-----===----===");
-  Serial.println("Cars[0] 41");
+  Serial.println("Cars[0] 1");
   cars[0].scroll(scrollIncrement);
-  Serial.println("Cars[1] 42");
+  Serial.println("Cars[1] 2");
   cars[1].scroll(scrollIncrement);
-  Serial.println("Cars[2] 43");
+  Serial.println("Cars[2] 3");
   cars[2].scroll(scrollIncrement);
 
 //Serial.println("_____");
@@ -139,24 +125,24 @@ void loop() {
     idx = random(0, NUMBER_OF_CAR_IMAGES);
     cars[0].setX(WIDTH);
     cars[0].setEnabled(true);
-    cars[0].bitmap = car_images[idx]; 
-    cars[0].mask = car_masks[idx]; 
+    cars[0].setBitmap(car_images[idx]); 
+    cars[0].setMask(car_masks[idx]); 
   }
 
   if (!cars[1].getEnabled()) {  
     idx = random(0, NUMBER_OF_CAR_IMAGES);
     cars[1].setX(WIDTH);
     cars[1].setEnabled(true);
-    cars[1].bitmap = car_images[idx]; 
-    cars[1].mask = car_masks[idx]; 
+    cars[1].setBitmap(car_images[idx]); 
+    cars[1].setMask(car_masks[idx]); 
  }
   
   if (!cars[2].getEnabled()) {  
     idx = random(0, NUMBER_OF_CAR_IMAGES);
     cars[2].setX(WIDTH);
     cars[2].setEnabled(true);
-    cars[2].bitmap = car_images[idx]; 
-    cars[2].mask = car_masks[idx]; 
+    cars[2].setBitmap(car_images[idx]); 
+    cars[2].setMask(car_masks[idx]); 
   }
   
   cars[0].renderImage(frame);
@@ -233,31 +219,25 @@ void drawScenery() {
 
   }
 
-  for (int x = 0; x < 17; x++) {
+  for (idx = 0; idx < 17; ++idx) {
    
-    switch (roadElements[x].roadType) {
+    switch (roadElements[idx].roadType) {
       
       case RoadType::Straight:
-//        Sprites::drawOverwrite((x*8) - road.x, roadElements[x].upperLimit, upper_road, frame);   
-//        Sprites::drawOverwrite((x*8) - road.x, roadElements[x].lowerLimit, lower_road, frame);   
         break;
        
       case RoadType::Up:
         upperLimitOffset = +2;
-//        Sprites::drawOverwrite((x*8) - road.x, roadElements[x].upperLimit + 2, upper_road_up, frame);   
-//        Sprites::drawOverwrite((x*8) - road.x, roadElements[x].lowerLimit, lower_road_up, frame);   
         break;
        
       case RoadType::Down:
         lowerLimitOffset = -2; 
-//        Sprites::drawOverwrite((x*8) - road.x, roadElements[x].upperLimit, upper_road_down, frame);   
-//        Sprites::drawOverwrite((x*8) - road.x, roadElements[x].lowerLimit - 2, lower_road_down, frame);   
         break;
         
     }
 
-    Sprites::drawOverwrite((x*8) - road.x, roadElements[x].upperLimit, upper_road, frame);   
-    Sprites::drawOverwrite((x*8) - road.x, roadElements[x].lowerLimit, lower_road, frame);   
+    Sprites::drawOverwrite((idx * 8) - road.x, roadElements[idx].upperLimit, upper_road, frame);   
+    Sprites::drawOverwrite((idx * 8) - road.x, roadElements[idx].lowerLimit, lower_road, frame);   
 
   }
 
@@ -268,7 +248,7 @@ void drawScenery() {
 
 void debugRoad() {
 
-  for (int x = 0; x < 17; x++) {
+  for (int x = 0; x < 17; ++x) {
     Serial.print("{");
     Serial.print(roadElements[x].upperLimit);
     Serial.print(",");
