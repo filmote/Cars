@@ -3,7 +3,7 @@
 #include "Sprites.h"
 #include "Enums.h"
 
-Car::Car(uint8_t name, Arduboy2 *arduboy, int16_t x, int16_t y, int16_t speed, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType) {
+Car::Car(uint8_t name, Arduboy2 &arduboy, int16_t x, int16_t y, int16_t speed, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType) {
 
   _name = name;
   _renderRequired = true;
