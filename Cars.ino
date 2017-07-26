@@ -1,6 +1,7 @@
 #include <Arduboy2.h>
 #include "Car.h"
 #include "Images.h" 
+#include "Enums.h"
 
 Arduboy2 arduboy;
 
@@ -15,54 +16,23 @@ Arduboy2 arduboy;
 
 #define NUMBER_OF_CAR_IMAGES  8
 #define NUMBER_OF_CARS        3
+#define ROAD_IMAGES_HEIGHT    24
 
 const uint8_t scrollIncrement = 2;
-uint8_t frame = 0;
-
-enum class RoadType : uint8_t {
-  Straight,
-  Up,  
-  Down,
-  Count,
-  First = Straight,
-  Last = Down,
-};
-
-struct RoadElement {
-  uint8_t upperLimit;
-  uint8_t lowerLimit;
-  RoadType roadType;
-};
+const uint8_t frame = 0;
 
 RoadElement roadElements[17];
-
-struct Road {
-  int16_t x;
-  int16_t y;
-  int16_t height;
-  RoadType type;
-  uint8_t randomNumber;
-  uint8_t randomCount;
-};
 Road road = { 0, -16, 64, RoadType::Straight, 0, 2 };
-
-struct Player {
-  uint8_t x;
-  uint8_t y;
-  const uint8_t height;
-  const uint8_t width;
-};
 Player player = {0, 24, 14, 16};
 
 const byte* car_images[] = { car_01,     car_02,     car_03,     car_04,     car_05,     car_06,     car_07,     car_08 };
 const byte* car_masks[] =  { mask_20_12, mask_19_12, mask_16_10, mask_19_12, mask_18_10, mask_17_13, mask_17_14, mask_19_15 };
 
 Car cars[3] = {
-  {1, arduboy, 80,  16, -4,  car_images[2], car_masks[2], cars},
-  {2, arduboy, 128, 32, -10, car_images[3], car_masks[3], cars},
-  {3, arduboy, 128, 48, -8,  car_images[4], car_masks[4], cars}
+  {1, arduboy, 80,  16, -4,  car_images[2], car_masks[2], cars, SteeringType::FollowRoad},
+  {2, arduboy, 128, 32, -10, car_images[3], car_masks[3], cars, SteeringType::FollowRoad},
+  {3, arduboy, 128, 48, -8,  car_images[4], car_masks[4], cars, SteeringType::ZigZag}
 };
-
 
 uint8_t idx = 0; // scratch variable.
 
@@ -111,11 +81,11 @@ void loop() {
   drawScenery();
   Serial.println("===----====-----===----===");
   Serial.println("Cars[0] 1");
-  cars[0].scroll(scrollIncrement);
+  cars[0].move(scrollIncrement, road.x + ROAD_IMAGES_HEIGHT, road.x + road.height + ROAD_IMAGES_HEIGHT);
   Serial.println("Cars[1] 2");
-  cars[1].scroll(scrollIncrement);
+  cars[1].move(scrollIncrement, road.x + ROAD_IMAGES_HEIGHT, road.x + road.height + ROAD_IMAGES_HEIGHT);
   Serial.println("Cars[2] 3");
-  cars[2].scroll(scrollIncrement);
+  cars[2].move(scrollIncrement, road.x + ROAD_IMAGES_HEIGHT, road.x + road.height + ROAD_IMAGES_HEIGHT);
 
 //Serial.println("_____");
 //Serial.println(cars[0].getName());
@@ -153,6 +123,7 @@ void loop() {
   
   arduboy.display();
   delay(10);
+  
 }
 
 void drawScenery() {

@@ -4,11 +4,13 @@
 #include "Arduboy2.h"
 #include "Sprites.h"
 #include "Arduino.h"
+#include "Enums.h"
+
 
 class Car {
 
    public:
-	   Car(uint8_t name, Arduboy2 &arduboy, int16_t x, int16_t y, int16_t speed, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars);
+	   Car(uint8_t name, Arduboy2 &arduboy, int16_t x, int16_t y, int16_t speed, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType);
      bool operator==(const Car &rhs)const; 
      bool operator!=(const Car &rhs)const; 
 
@@ -18,7 +20,7 @@ class Car {
      Rect getRect(int x, int y);
      void renderImage(int16_t frame);
      void clearImage(int16_t frame);
-     void scroll(byte pixels);
+     void move(uint8_t pixels, uint8_t roadUpper, uint8_t roadLower);
      
      const int16_t getX();
      const int16_t getY();
@@ -53,6 +55,11 @@ class Car {
 
      const uint8_t *_bitmap;
      const uint8_t *_mask;
+     SteeringType _steeringType;
 
+     // Steering details ..
+     bool _goingUp;          // direction
+     uint8_t _roadUpper;
+     uint8_t _roadLower;
 };
 #endif

@@ -1,9 +1,9 @@
 #include "Car.h"
 #include "Arduboy2.h"
 #include "Sprites.h"
-#include "Arduino.h"
+#include "Enums.h"
 
-Car::Car(uint8_t name, Arduboy2 &arduboy, int16_t x, int16_t y, int16_t speed, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars) {
+Car::Car(uint8_t name, Arduboy2 &arduboy, int16_t x, int16_t y, int16_t speed, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType) {
 
   _name = name;
   _renderRequired = true;
@@ -15,6 +15,7 @@ Car::Car(uint8_t name, Arduboy2 &arduboy, int16_t x, int16_t y, int16_t speed, c
   _bitmap = bitmapRef;
   _mask = maskRef;
   _cars = cars;
+  _steeringType = steeringType;
 
 }
 
@@ -76,7 +77,7 @@ Rect Car::getRect(int16_t x, int16_t y) {
 /*
  *  Simply scrolling the images to the left does not force the image to be rendered again.
  */
-void Car::scroll(byte pixels) {
+void Car::move(uint8_t pixels, uint8_t roadUpper, uint8_t roadLower) {
 //Serial.print("Scroll - Car_");
 //Serial.println(this->getName());
 
@@ -84,6 +85,66 @@ void Car::scroll(byte pixels) {
 
   int16_t x = _x - (pixels * 10) - _speed;
   int16_t y = _y;
+
+  switch (_steeringType) {
+
+    case (SteeringType::FollowRoad):
+
+      if (_roadUpper > 0 && _roadLower > 0) {
+
+        y = y + (_roadUpper - roadUpper);
+        _roadUpper = roadUpper;
+        _roadLower = roadLower;
+        
+      }
+
+      break;
+
+    case (SteeringType::ZigZag):
+
+      if (_goingUp) {
+
+        if (_y > roadUpper) {
+          --y;        
+        }
+        else {
+          _goingUp = !_goingUp;
+        }
+        
+      }
+      else {
+        
+        if (_y < roadLower) {
+          ++y;        
+        }
+        else {
+          _goingUp = !_goingUp;
+        }
+        
+      }
+      
+      break;
+
+    case (SteeringType::Random):
+ /*
+    road.randomCount--;
+    
+    if (road.randomCount == 0) {
+      
+      if (road.randomNumber > 0) {
+        road.randomNumber = 0;
+      }
+      else {
+        road.randomNumber = random((uint8_t)RoadType::First, (uint8_t)RoadType::Count);   
+      }
+
+      road.randomCount = random(2, 6);
+      
+    }
+*/
+      break;
+      
+  }
 
   for (uint8_t i = 0; i < 3; ++i) {
 
@@ -104,6 +165,7 @@ void Car::scroll(byte pixels) {
 
   }
 
+  // No collision occured with this 
   if (noCollisions) {
 
     _x = x;
