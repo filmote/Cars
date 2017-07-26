@@ -29,9 +29,9 @@ const byte* car_images[] = { car_01,     car_02,     car_03,     car_04,     car
 const byte* car_masks[] =  { mask_20_12, mask_19_12, mask_16_10, mask_19_12, mask_18_10, mask_17_13, mask_17_14, mask_19_15 };
 
 Car cars[3] = {
-  {1, arduboy, 80,  16, -4,  car_images[2], car_masks[2], cars, SteeringType::FollowRoad},
-  {2, arduboy, 128, 32, -10, car_images[3], car_masks[3], cars, SteeringType::FollowRoad},
-  {3, arduboy, 128, 48, -8,  car_images[4], car_masks[4], cars, SteeringType::ZigZag}
+  {1, &arduboy, 80,  16, -4,  car_images[2], car_masks[2], cars, SteeringType::FollowRoad},
+  {2, &arduboy, 128, 32, -10, car_images[3], car_masks[3], cars, SteeringType::FollowRoad},
+  {3, &arduboy, 128, 48, -8,  car_images[4], car_masks[4], cars, SteeringType::ZigZag}
 };
 
 uint8_t idx = 0; // scratch variable.
@@ -41,7 +41,7 @@ void setup() {
   arduboy.begin();
   arduboy.setFrameRate(60);
   arduboy.initRandomSeed();
-  
+
   cars[0].renderImage(frame);
   cars[1].renderImage(frame);
   cars[2].renderImage(frame);
