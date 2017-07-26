@@ -11,23 +11,23 @@ class Car {
 
    public:
 	 Car(uint8_t name, Arduboy2 &arduboy, int16_t x, int16_t y, int16_t speed, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType);
-     bool operator==(const Car &rhs)const; 
-     bool operator!=(const Car &rhs)const; 
+     bool operator==(const Car &rhs) const; 
+     bool operator!=(const Car &rhs) const; 
 
-     void debug();
+     void debug() const;
 
-     Rect getRect();
-     Rect getRect(int x, int y);
+     Rect getRect() const;
+     Rect getRect(int x, int y) const;
      void renderImage(int16_t frame);
      void clearImage(int16_t frame);
      void move(uint8_t pixels, uint8_t roadUpper, uint8_t roadLower);
      
-     const int16_t getX();
-     const int16_t getY();
-     const int16_t getSpeed();
-     const bool getEnabled();
-     const bool getRenderRequired();
-     const byte getName();
+     const int16_t getX() const;
+     const int16_t getY() const;
+     const int16_t getSpeed() const;
+     const bool getEnabled() const;
+     const bool getRenderRequired() const;
+     const byte getName() const;
 
      void setX(const int16_t value);
      void setY(const int16_t value);
@@ -39,8 +39,8 @@ class Car {
      void setBitmap(const uint8_t *value);
      void setMask(const uint8_t *value);
 
-     int16_t getWidth();
-     int16_t getHeight();
+     int16_t getWidth() const;
+     int16_t getHeight() const;
      
    private:
      bool _renderRequired;
