@@ -3,7 +3,6 @@
 #include "Images.h" 
 
 Arduboy2 arduboy;
-Sprites sprites;
 
 #define BUFFER_ROW_0_START    0
 #define BUFFER_ROW_1_START    BUFFER_ROW_0_START + WIDTH
@@ -62,8 +61,15 @@ Car car3 = Car(3);
 */
 const byte* car_images[] = { car_01,     car_02,     car_03,     car_04,     car_05,     car_06,     car_07,     car_08 };
 const byte* car_masks[] =  { mask_20_12, mask_19_12, mask_16_10, mask_19_12, mask_18_10, mask_17_13, mask_17_14, mask_19_15 };
-//Car* cars[] = { &car1, &car2, &car3 };
-Car cars[3] = { 41, 42, 43};
+
+Car cars[3] = 
+{
+  {41, arduboy, 80, 16, -4, car_images[2], car_masks[2], cars},
+  {42, arduboy, 128, 32, -10, car_images[3], car_masks[3], cars},
+  {43, arduboy, 128, 48, -8, car_images[4], car_masks[4], cars}
+};
+
+
 byte idx = 0; // scratch variable.
 
 void setup() {
@@ -72,34 +78,13 @@ void setup() {
   arduboy.setFrameRate(60);
   arduboy.initRandomSeed();
   
-  cars[0].setArduboy(arduboy);
   cars[0].setCars(cars);
-  cars[0].setX(80);
-  cars[0].setY(16);
-  cars[0].bitmap = car_images[2];
-  cars[0].mask = car_masks[2];
-  cars[0].setSpeed(-4);
-  cars[0].setEnabled(true);
   cars[0].renderImage(frame);
   
-  cars[1].setArduboy(arduboy);
   cars[1].setCars(cars);
-  cars[1].setX(128);
-  cars[1].setY(32);
-  cars[1].bitmap = car_images[3];
-  cars[1].mask = car_masks[3];
-  cars[1].setEnabled(true);
-  cars[1].setSpeed(-10);
   cars[1].renderImage(frame);
   
-  cars[2].setArduboy(arduboy);
   cars[2].setCars(cars);
-  cars[2].setX(128);
-  cars[2].setY(48);
-  cars[2].bitmap = car_images[4];
-  cars[2].mask = car_masks[4];
-  cars[2].setSpeed(-8);
-  cars[2].setEnabled(true);
   cars[2].renderImage(frame);
 
 //  cars[0].setCars(cars);
@@ -125,7 +110,7 @@ void loop() {
 //arduboy.clear();
 
 
-  sprites.drawErase(player.x, player.y, car_player, frame);
+  Sprites::drawErase(player.x, player.y, car_player, frame);
   cars[0].clearImage(frame);
   cars[1].clearImage(frame);
   cars[2].clearImage(frame);
@@ -178,15 +163,16 @@ void loop() {
   cars[1].renderImage(frame);
   cars[2].renderImage(frame);
   
-  sprites.drawExternalMask(player.x, player.y, car_player, mask_16_14, frame, frame);
-
-
+  Sprites::drawExternalMask(player.x, player.y, car_player, mask_16_14, frame, frame);
   
   arduboy.display();
   delay(10);
 }
 
 void drawScenery() {
+
+  int8_t upperLimitOffset = 0;
+  int8_t lowerLimitOffset = 0;
 
   if (road.x == 8) {
       
@@ -252,21 +238,26 @@ void drawScenery() {
     switch (roadElements[x].roadType) {
       
       case RoadType::Straight:
-        sprites.drawOverwrite((x*8) - road.x, roadElements[x].upperLimit, upper_road, frame);   
-        sprites.drawOverwrite((x*8) - road.x, roadElements[x].lowerLimit, lower_road, frame);   
+//        Sprites::drawOverwrite((x*8) - road.x, roadElements[x].upperLimit, upper_road, frame);   
+//        Sprites::drawOverwrite((x*8) - road.x, roadElements[x].lowerLimit, lower_road, frame);   
         break;
        
       case RoadType::Up:
-        sprites.drawOverwrite((x*8) - road.x, roadElements[x].upperLimit + 2, upper_road_up, frame);   
-        sprites.drawOverwrite((x*8) - road.x, roadElements[x].lowerLimit, lower_road_up, frame);   
+        upperLimitOffset = +2;
+//        Sprites::drawOverwrite((x*8) - road.x, roadElements[x].upperLimit + 2, upper_road_up, frame);   
+//        Sprites::drawOverwrite((x*8) - road.x, roadElements[x].lowerLimit, lower_road_up, frame);   
         break;
        
       case RoadType::Down:
-        sprites.drawOverwrite((x*8) - road.x, roadElements[x].upperLimit, upper_road_down, frame);   
-        sprites.drawOverwrite((x*8) - road.x, roadElements[x].lowerLimit - 2, lower_road_down, frame);   
+        lowerLimitOffset = -2; 
+//        Sprites::drawOverwrite((x*8) - road.x, roadElements[x].upperLimit, upper_road_down, frame);   
+//        Sprites::drawOverwrite((x*8) - road.x, roadElements[x].lowerLimit - 2, lower_road_down, frame);   
         break;
         
     }
+
+    Sprites::drawOverwrite((x*8) - road.x, roadElements[x].upperLimit, upper_road, frame);   
+    Sprites::drawOverwrite((x*8) - road.x, roadElements[x].lowerLimit, lower_road, frame);   
 
   }
 

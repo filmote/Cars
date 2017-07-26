@@ -3,12 +3,18 @@
 #include "Sprites.h"
 #include "Arduino.h"
 
-Car::Car(uint8_t name) {
+Car::Car(uint8_t name, Arduboy2 &arduboy, int16_t x, int16_t y, int16_t speed, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars) {
 
   _name = name;
   _renderRequired = true;
+  _x = x;
+  _y = y;
   _enabled = false;
-  _speed = 0;
+  _speed = speed;
+  _arduboy = arduboy;
+  bitmap = bitmapRef;
+  mask = maskRef;
+  _cars = cars;
 
 }
 
@@ -81,7 +87,7 @@ void Car::scroll(byte pixels) {
 
   for (int i = 0; i < 3; ++i) {
 
-    Car car = _cars[i];
+    const Car car = _cars[i];
     car.debug();
 
     if (car != *this) {
@@ -121,26 +127,26 @@ void Car::scroll(byte pixels) {
   
 }
 
-int16_t Car::getX() {
+const int16_t Car::getX() {
 
   return _x / 10;
 
 }
 
-void Car::setX(int16_t value) {
+void Car::setX(const int16_t value) {
 
   _x = value * 10;
   _renderRequired = true;
 
 }
 
-int16_t Car::getY() {
+const int16_t Car::getY() {
 
   return _y / 10;
 
 }
 
-void Car::setY(int value) {
+void Car::setY(const int value) {
 
   _y = value * 10;
   _renderRequired = true;
@@ -148,13 +154,13 @@ void Car::setY(int value) {
 }
 
 
-int16_t Car::getSpeed() {
+const int16_t Car::getSpeed() {
 
   return _speed;
 
 }
 
-void Car::setSpeed(int16_t value) {
+void Car::setSpeed(const int16_t value) {
 
   _speed = value;
   _renderRequired = true;
@@ -162,14 +168,14 @@ void Car::setSpeed(int16_t value) {
 }
 
 
-bool Car::getEnabled() {
+const bool Car::getEnabled() {
 
   return _enabled;
 
 }
 
 
-void Car::setEnabled(bool value) {
+void Car::setEnabled(const bool value) {
 
   _enabled = value;
   _renderRequired = true;
@@ -178,14 +184,14 @@ void Car::setEnabled(bool value) {
 
 
 
-bool Car::getRenderRequired() {
+const bool Car::getRenderRequired() {
 
   return _renderRequired;
 
 }
 
 
-void Car::setRenderRequired(bool value) {
+void Car::setRenderRequired(const bool value) {
 
   _renderRequired = value;
 
@@ -208,20 +214,20 @@ int16_t Car::getHeight() {
   _sprites = value;
 
 }*/
-
+/*
 void Car::setArduboy(Arduboy2 &value) {
 
   _arduboy = value;
 
 }
-
+*/
 void Car::setCars(const Car *value) {
 
   _cars = value;
 
 }
 
-byte Car::getName() {
+const byte Car::getName() {
 
   return _name;
 

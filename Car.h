@@ -8,7 +8,7 @@
 class Car {
 
    public:
-	   Car(uint8_t name);
+	   Car(uint8_t name, Arduboy2 &arduboy, int16_t x, int16_t y, int16_t speed, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars);
      bool operator==(const Car &rhs)const; 
      bool operator!=(const Car &rhs)const; 
 
@@ -20,20 +20,20 @@ class Car {
      void clearImage(int16_t frame);
      void scroll(byte pixels);
      
-     int16_t getX();
-     int16_t getY();
-     int16_t getSpeed();
-     bool getEnabled();
-     bool getRenderRequired();
-     byte getName();
+     const int16_t getX();
+     const int16_t getY();
+     const int16_t getSpeed();
+     const bool getEnabled();
+     const bool getRenderRequired();
+     const byte getName();
 
-     void setX(int value);
-     void setY(int value);
-     void setSpeed(int value);
-     void setEnabled(bool value);
-     void setRenderRequired(bool value);
+     void setX(const int value);
+     void setY(const int value);
+     void setSpeed(const int value);
+     void setEnabled(const bool value);
+     void setRenderRequired(const bool value);
 //     void setSprites(const Sprites *value);
-     void setArduboy(Arduboy2 &value);
+//     void setArduboy(Arduboy2 &value);
      void setCars(const Car *value);
 
      int16_t getWidth();
@@ -44,11 +44,11 @@ class Car {
      
    private:
      bool _renderRequired;
-     int _x;               // factor of 10
-     int _y;               // factor of 10
-     int _speed;           // factor of 10
+     int16_t _x;               // factor of 10
+     int16_t _y;               // factor of 10
+     int16_t _speed;           // factor of 10
      bool _enabled;
-     byte _name;
+     uint8_t _name;
 //     const Sprites *_sprites;
      Arduboy2 &_arduboy;
      const Car *_cars;
