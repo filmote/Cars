@@ -175,7 +175,7 @@ void drawScenery() {
 //    debugRoad();
    
     RoadElement * pt = roadElements;
-    memmove (pt, pt + sizeof(RoadElement), 16 * sizeof(RoadElement));
+    memmove (static_cast<void*>(&pt[0]), static_cast<const void*>(&pt[1]), 16 * sizeof(RoadElement));
 
 //   Serial.print("After  : ");
 //    debugRoad();
