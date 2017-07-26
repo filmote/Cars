@@ -174,7 +174,7 @@ void drawScenery() {
 //   Serial.print("Before : ");
 //    debugRoad();
    
-    int pt = roadElements;
+    RoadElement * pt = roadElements;
     memmove (pt, pt + sizeof(RoadElement), 16 * sizeof(RoadElement));
 
 //   Serial.print("After  : ");
