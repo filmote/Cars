@@ -10,7 +10,7 @@
 class Car {
 
    public:
-	   Car(uint8_t name, Arduboy2 &arduboy, int16_t x, int16_t y, int16_t speed, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType);
+	 Car(uint8_t name, Arduboy2 &arduboy, int16_t x, int16_t y, int16_t speed, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType);
      bool operator==(const Car &rhs)const; 
      bool operator!=(const Car &rhs)const; 
 
@@ -50,7 +50,7 @@ class Car {
      bool _enabled;
      uint8_t _name;
 //     const Sprites *_sprites;
-     Arduboy2 &_arduboy;
+     Arduboy2 *_arduboy;
      const Car *_cars;
 
      const uint8_t *_bitmap;

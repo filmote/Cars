@@ -11,7 +11,7 @@ Car::Car(uint8_t name, Arduboy2 &arduboy, int16_t x, int16_t y, int16_t speed, c
   _y = y;
   _enabled = false;
   _speed = speed;
-  _arduboy = arduboy;
+  _arduboy = &arduboy;
   _bitmap = bitmapRef;
   _mask = maskRef;
   _cars = cars;
@@ -153,7 +153,7 @@ void Car::move(uint8_t pixels, uint8_t roadUpper, uint8_t roadLower) {
 
     if (car != *this) {
     
-      if (_arduboy.collide(car.getRect(), this->getRect(_x, _y))) {
+      if (_arduboy->collide(car.getRect(), this->getRect(_x, _y))) {
 
         this->debug();
         noCollisions = false;
