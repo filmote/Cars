@@ -79,12 +79,12 @@ void loop() {
   //scrollBuffer(scrollIncrement);
 
   drawScenery();
-  Serial.println("===----====-----===----===");
-  Serial.println("Cars[0] 1");
+  Serial.println(F("===----====-----===----==="));
+  Serial.println(("Cars[0] 1"));
   cars[0].move(scrollIncrement, road.x + ROAD_IMAGES_HEIGHT, road.x + road.height + ROAD_IMAGES_HEIGHT);
-  Serial.println("Cars[1] 2");
+  Serial.println(F("Cars[1] 2"));
   cars[1].move(scrollIncrement, road.x + ROAD_IMAGES_HEIGHT, road.x + road.height + ROAD_IMAGES_HEIGHT);
-  Serial.println("Cars[2] 3");
+  Serial.println(F("Cars[2] 3"));
   cars[2].move(scrollIncrement, road.x + ROAD_IMAGES_HEIGHT, road.x + road.height + ROAD_IMAGES_HEIGHT);
 
 //Serial.println("_____");
@@ -171,11 +171,11 @@ void drawScenery() {
     }
 
      
-//   Serial.print("Before : ");
+//   Serial.print(F("Before : "));
 //    debugRoad();
    
-    int pt = roadElements;
-    memmove (pt, pt + sizeof(RoadElement), 16 * sizeof(RoadElement));
+	RoadElement * pt = roadElements;
+	memmove(static_cast<void*>(&pt[0]), static_cast<const void*>(&pt[1]), 16 * sizeof(RoadElement));
 
 //   Serial.print("After  : ");
 //    debugRoad();
@@ -220,16 +220,15 @@ void drawScenery() {
 void debugRoad() {
 
   for (int x = 0; x < 17; ++x) {
-    Serial.print("{");
+    Serial.print('{');
     Serial.print(roadElements[x].upperLimit);
-    Serial.print(",");
+    Serial.print(',');
     Serial.print(roadElements[x].lowerLimit);
-    Serial.print(",");
+    Serial.print(',');
     Serial.print((int)roadElements[x].roadType);
-    Serial.print("}");
+    Serial.print('}');
   }
-
-  Serial.println(" ");
+  Serial.println(' ');
 
 }
 
