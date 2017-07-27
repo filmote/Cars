@@ -3,7 +3,7 @@
 #include "Sprites.h"
 #include "Enums.h"
 
-Car::Car(uint8_t name, Arduboy2 *arduboy, int16_t x, int16_t y, int16_t speed, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType) {
+Car::Car(uint8_t name, /*Arduboy2 *arduboy,*/ int16_t x, int16_t y, int16_t speed, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType) {
 
   _name = name;
   _renderRequired = true;
@@ -11,7 +11,7 @@ Car::Car(uint8_t name, Arduboy2 *arduboy, int16_t x, int16_t y, int16_t speed, c
   _y = y;
   _enabled = false;
   _speed = speed;
-  _arduboy = arduboy;
+//  _arduboy = arduboy;
   _bitmap = bitmapRef;
   _mask = maskRef;
   _cars = cars;
@@ -153,7 +153,7 @@ void Car::move(uint8_t pixels, uint8_t roadUpper, uint8_t roadLower) {
 
     if (car != *this) {
     
-      if (_arduboy->collide(car.getRect(), this->getRect(_x, _y))) {
+      if (collide(car.getRect(), this->getRect(_x, _y))) {
 
         this->debug();
         noCollisions = false;
@@ -345,3 +345,12 @@ Serial.println("");
   }
   
 }
+
+bool Car::collide(Rect rect1, Rect rect2) {
+  
+  return !(rect2.x                >= rect1.x + rect1.width  ||
+           rect2.x + rect2.width  <= rect1.x                ||
+           rect2.y                >= rect1.y + rect1.height ||
+           rect2.y + rect2.height <= rect1.y);
+}
+
