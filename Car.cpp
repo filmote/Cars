@@ -29,29 +29,29 @@ bool Car::operator!=(const Car& rhs) const {
 
 void Car::debug() const {
 
-  Serial.print("Car_");
+  Serial.print(F("Car_"));
   Serial.print(this->getName());
-  Serial.print(": x=");
+  Serial.print(F(": x="));
   Serial.print(this->getX());
-  Serial.print(", y=");
+  Serial.print(F(", y="));
   Serial.print(this->getY());
-  Serial.print(", width=");
+  Serial.print(F(", width="));
   Serial.print(this->getWidth());
-  Serial.print(", height=");
+  Serial.print(F(", height="));
   Serial.print(this->getHeight());
-  Serial.print(", xMax=");
+  Serial.print(F(", xMax="));
   Serial.print(this->getX() + this->getWidth());
-  Serial.print(", yMax=");
+  Serial.print(F(", yMax="));
   Serial.print(this->getY() + this->getHeight());
-  Serial.print(", rect=");
+  Serial.print(F(", rect="));
   Serial.print(this->getRect().x);
-  Serial.print(" ");
+  Serial.print(' ');
   Serial.print(this->getRect().y);
-  Serial.print(" ");
+  Serial.print(' ');
   Serial.print(this->getRect().width);
-  Serial.print(" ");
+  Serial.print(' ');
   Serial.print(this->getRect().height);
-  Serial.println(" ");
+  Serial.println();
 
 }
 
@@ -78,7 +78,7 @@ Rect Car::getRect(int16_t x, int16_t y) const {
  *  Simply scrolling the images to the left does not force the image to be rendered again.
  */
 void Car::move(uint8_t pixels, uint8_t roadUpper, uint8_t roadLower) {
-//Serial.print("Scroll - Car_");
+//Serial.print(F("Scroll - Car_"));
 //Serial.println(this->getName());
 
   bool noCollisions = true;
@@ -182,9 +182,9 @@ void Car::move(uint8_t pixels, uint8_t roadUpper, uint8_t roadLower) {
 
   _enabled = (this->getWidth() + this->getX() > 0);
   if (!_enabled) {
-    Serial.print("Car_");
+    Serial.print(F("Car_"));
     Serial.print(this->getName());
-    Serial.println(" enabled = false");
+    Serial.println(F(" enabled = false"));
   }
   
 }
@@ -312,13 +312,13 @@ void Car::setMask(const uint8_t *value) {
 void Car::renderImage(int16_t frame) {
   
   
-Serial.print("renderImage - Car_");
+Serial.print(F("renderImage - Car_"));
 Serial.print(this->getName());
-Serial.print(", renderRequired:");
+Serial.print(F(", renderRequired:"));
 Serial.print(this->getRenderRequired());
-Serial.print(", enabled:");
+Serial.print(F(", enabled:"));
 Serial.print(this->getEnabled());
-Serial.println("");
+Serial.println();
 
   if (_renderRequired && _enabled) {
 
@@ -331,13 +331,13 @@ Serial.println("");
 
 void Car::clearImage(int16_t frame) {
 /* 
-Serial.print("renderImage - Car_");
+Serial.print(F("renderImage - Car_"));
 Serial.print(this->getName());
-Serial.print(", renderRequired:");
+Serial.print(F(", renderRequired:"));
 Serial.print(this->getRenderRequired());
-Serial.print(", enabled:");
+Serial.print(F(", enabled:"));
 Serial.print(this->getEnabled());
-Serial.println("");
+Serial.println();
 */
   if (_speed != 0) {
     Sprites::drawErase(this->getX(), this->getY(), _bitmap, frame);
