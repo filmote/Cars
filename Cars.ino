@@ -174,8 +174,8 @@ void drawScenery() {
 //   Serial.print("Before : ");
 //    debugRoad();
    
-    int pt = roadElements;
-    memmove (pt, pt + sizeof(RoadElement), 16 * sizeof(RoadElement));
+	RoadElement * pt = roadElements;
+	memmove(static_cast<void*>(&pt[0]), static_cast<const void*>(&pt[1]), 16 * sizeof(RoadElement));
 
 //   Serial.print("After  : ");
 //    debugRoad();
