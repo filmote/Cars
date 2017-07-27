@@ -261,7 +261,7 @@ void Car::setRenderRequired(const bool value) {
 
 int Car::getWidth() const {
 
-  return pgm_read_byte(_bitmap);
+  return pgm_read_byte(&_bitmap[0]);
 
 }
 
