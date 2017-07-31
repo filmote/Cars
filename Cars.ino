@@ -3,17 +3,9 @@
 #include "Player.h"
 #include "Images.h" 
 #include "Enums.h"
+#include "Sort.h"
 
 Arduboy2 arduboy; 
-
-#define BUFFER_ROW_0_START    0
-#define BUFFER_ROW_1_START    BUFFER_ROW_0_START + WIDTH
-#define BUFFER_ROW_2_START    BUFFER_ROW_1_START + WIDTH
-#define BUFFER_ROW_3_START    BUFFER_ROW_2_START + WIDTH
-#define BUFFER_ROW_4_START    BUFFER_ROW_3_START + WIDTH
-#define BUFFER_ROW_5_START    BUFFER_ROW_4_START + WIDTH
-#define BUFFER_ROW_6_START    BUFFER_ROW_5_START + WIDTH
-#define BUFFER_ROW_7_START    BUFFER_ROW_6_START + WIDTH
 
 #define NUMBER_OF_CAR_IMAGES  8
 #define NUMBER_OF_CARS        3
@@ -40,6 +32,18 @@ Car cars[3] = {
 
 int16_t idx = 0; // scratch variable.
 int8_t launchCountdown = 70;
+
+
+bool sortByNewX(Car x, Car y) {
+  
+  if (x.getNewX() > y.getNewX()) {
+    return true;
+  } 
+  else {
+    return false;
+  }
+  
+}
 
 void setup() {
   
@@ -76,10 +80,10 @@ void loop() {
 //  if (arduboy.pressed(UP_BUTTON) && player.y > getRoadElement_UpperLimit(player.x) + ROAD_OFFSET_UPPER)                      { player.y--; }
 //  if (arduboy.pressed(DOWN_BUTTON) && player.y < getRoadElement_LowerLimit(player.x) + ROAD_OFFSET_LOWER - player.height)    { player.y++; }
 
-  if (arduboy.pressed(UP_BUTTON) && player.getY() > 0)                                { player.setY(player.getY() - 1); }
-  if (arduboy.pressed(DOWN_BUTTON) && player.getY() < HEIGHT - player.getHeight())    { player.setY(player.getY() + 1); }
-  if (arduboy.pressed(LEFT_BUTTON) && player.getX() > 0)                              { player.setX(player.getX() - 1); }
-  if (arduboy.pressed(RIGHT_BUTTON) && player.getX() < 64)                            { player.setX(player.getX() + 1); }
+  if (arduboy.pressed(UP_BUTTON) && player.getY() > 0)                                { player.setNewY(player.getY() - static_cast<SQ7x8>(0.5)); }
+  if (arduboy.pressed(DOWN_BUTTON) && player.getY() < HEIGHT - player.getHeight())    { player.setNewY(player.getY() + static_cast<SQ7x8>(0.5)); }
+  if (arduboy.pressed(LEFT_BUTTON) && player.getX() > 0)                              { player.setNewX(player.getX() - static_cast<SQ7x8>(0.75)); }
+  if (arduboy.pressed(RIGHT_BUTTON) && player.getX() < 64)                            { player.setNewX(player.getX() + static_cast<SQ7x8>(1.00)); }
  
   //scrollBuffer(scrollIncrement);
 
@@ -102,29 +106,103 @@ void loop() {
   }
 
 
-  if (player.getY().GetInteger() < getRoadElement_UpperLimit(player.getX()) + ROAD_OFFSET_UPPER)  { 
-    Serial.print("Upper Rough - player.getX(): ");
-    Serial.print(static_cast<float>(player.getX()));
-    Serial.print(", player.getNewX(): ");
-    Serial.print(static_cast<float>(player.getNewX()));
-    player.setNewX(player.getX() - 0.50); 
-    Serial.print(", player.getX(): ");
-    Serial.println(static_cast<float>(player.getNewX()));
-    Serial.print(", player.getNewX(): ");
-    Serial.print(static_cast<float>(player.getNewX()));
-    }
-  if (player.getY().GetInteger() < getRoadElement_LowerLimit(player.getX()) + ROAD_OFFSET_LOWER)  { player.setNewX(player.getX() - 0.50); }
-
-  // Is the player touching any other cars?
-  
-
-//  if (cars[0].getEnabled()) { cars[0].move(scrollIncrement, getRoadElement_UpperLimit(cars[0].getX()) + ROAD_OFFSET_UPPER, getRoadElement_LowerLimit(cars[0].getX()) + ROAD_OFFSET_LOWER); }
-//  if (cars[1].getEnabled()) { cars[1].move(scrollIncrement, getRoadElement_UpperLimit(cars[1].getX()) + ROAD_OFFSET_UPPER, getRoadElement_LowerLimit(cars[1].getX()) + ROAD_OFFSET_LOWER); }
-//  if (cars[2].getEnabled()) { cars[2].move(scrollIncrement, getRoadElement_UpperLimit(cars[2].getX()) + ROAD_OFFSET_UPPER, getRoadElement_LowerLimit(cars[2].getX()) + ROAD_OFFSET_LOWER); }
+  if (player.getY().GetInteger() < getRoadElement_UpperLimit(player.getX()) + ROAD_OFFSET_UPPER)                         { player.setNewX(player.getX() - static_cast<SQ7x8>(0.4)); }
+  if (player.getY().GetInteger() + player.getHeight() > getRoadElement_LowerLimit(player.getX()) + ROAD_OFFSET_LOWER)    { player.setNewX(player.getX() - static_cast<SQ7x8>(0.4)); }
 
   if (cars[0].getEnabled()) { cars[0].calcNewPosition(scrollIncrement, getRoadElement_UpperLimit(cars[0].getX()) + ROAD_OFFSET_UPPER, getRoadElement_LowerLimit(cars[0].getX()) + ROAD_OFFSET_LOWER); }
   if (cars[1].getEnabled()) { cars[1].calcNewPosition(scrollIncrement, getRoadElement_UpperLimit(cars[1].getX()) + ROAD_OFFSET_UPPER, getRoadElement_LowerLimit(cars[1].getX()) + ROAD_OFFSET_LOWER); }
   if (cars[2].getEnabled()) { cars[2].calcNewPosition(scrollIncrement, getRoadElement_UpperLimit(cars[2].getX()) + ROAD_OFFSET_UPPER, getRoadElement_LowerLimit(cars[2].getX()) + ROAD_OFFSET_LOWER); }
+
+
+  // Is the player touching any other cars?
+
+  bool collision = false;
+
+
+  for (idx = 0; idx < 3; ++idx) {
+
+    if (arduboy.collide(player.getNewRect(), cars[idx].getNewRect())) {
+
+      if (!collision) {
+        player.setNewX(player.getX() - static_cast<SQ7x8>(0.4));
+        collision = true;
+      }
+
+      cars[idx].setNewX(cars[idx].getX() + static_cast<SQ7x8>(0.4));
+      
+    }
+    
+  }
+
+
+  // Are any cars touching other cars ?
+//sortArray(cars, 3, sortByNewX);
+
+    
+  for (uint8_t j = 0; j < 3; ++j) {
+
+    bool collisions_XY = false;
+    bool collisions_X = false;
+    bool collisions_Y = false;
+
+    for (uint8_t i = 0; i < 3; ++i) {
+  
+      if (i != j && cars[i].getEnabled()) {
+        
+        if (arduboy.collide(cars[i].getNewRect(), cars[j].getNewRect())) {
+
+          collisions_XY = true;
+
+          if (arduboy.collide(cars[i].getNewRect(), cars[j].getRect(cars[j].getNewX().GetInteger(), cars[j].getY().GetInteger()))) {
+
+            collisions_X = true;
+            
+          }
+
+          else if (arduboy.collide(cars[i].getNewRect(), cars[j].getRect(cars[j].getX().GetInteger(), cars[j].getNewY().GetInteger()))) {
+
+            collisions_Y = true;
+
+          }
+  
+          break;
+  
+        }
+  
+      }
+  
+    }
+
+Serial.print("collisions_XY : ");
+Serial.print(collisions_XY);
+Serial.print(", collisions_X : ");
+Serial.print(collisions_X);
+Serial.print(", collisions_Y : ");
+Serial.print(collisions_Y);
+Serial.println("");
+
+    if (collisions_XY) {
+//Serial.println("collisions_XY");      
+     
+      if (collisions_X) { 
+//Serial.println("collisions_X");      
+        cars[j].setNewX(cars[j].getX()); 
+      }
+      else  if (collisions_Y) { 
+//Serial.println("collisions_Y");      
+        cars[j].setNewY(cars[j].getY()); 
+      }
+
+    }
+
+  }
+
+
+
+  player.updatePosition();
+  if (cars[0].getEnabled()) { cars[0].updatePosition(); }
+  if (cars[1].getEnabled()) { cars[1].updatePosition(); }
+  if (cars[2].getEnabled()) { cars[2].updatePosition(); }
 
 
 
@@ -277,11 +355,12 @@ void launchCar(uint8_t carNumber) {
   cars[carNumber].setBitmap(car_images[idx]); 
   cars[carNumber].setMask(car_masks[idx]); 
   cars[carNumber].setY(random(road.y  + ROAD_OFFSET_UPPER + 4 , road.y + road.height - 6 - cars[carNumber].getHeight()));
-  cars[carNumber].setSpeedX((random(-190, -40) / 100.0));
+  cars[carNumber].setSpeedX((random(-180, -40) / 100.0));
   cars[carNumber].setSpeedY((random(20, 5) / 100.0));
 
   cars[carNumber].setSteeringType(static_cast<SteeringType> (random((uint8_t)SteeringType::First, (uint8_t)SteeringType::Count)));
 //  cars[carNumber].setSteeringType(SteeringType::Random);
 
 }
+
 

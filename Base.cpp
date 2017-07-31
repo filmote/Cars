@@ -8,7 +8,9 @@
 Base::Base(SQ7x8 x, SQ7x8 y, const uint8_t *bitmapRef, const uint8_t *maskRef) {
 
   _x = x;
+  _newX = x;
   _y = y;
+  _newY = y;
   _bitmap = bitmapRef;
   _mask = maskRef;
 
@@ -20,7 +22,13 @@ Base::Base(SQ7x8 x, SQ7x8 y, const uint8_t *bitmapRef, const uint8_t *maskRef) {
  */
 Rect Base::getRect() const {
 
-  return (Rect){this->getX().GetInteger(), this->getY().GetInteger(), pgm_read_byte(_bitmap), pgm_read_byte(_bitmap[1])};
+  return (Rect){this->getX().GetInteger(), this->getY().GetInteger(), pgm_read_byte(&_bitmap[0]), pgm_read_byte(&_bitmap[1])};
+
+}
+
+Rect Base::getNewRect() const {
+
+  return (Rect){this->getNewX().GetInteger(), this->getNewY().GetInteger(), pgm_read_byte(&_bitmap[0]), pgm_read_byte(&_bitmap[1])};
 
 }
 
@@ -42,6 +50,7 @@ const SQ7x8 Base::getX() const {
 void Base::setX(const SQ7x8 value) {
 
   _x = value;
+  _newX = value;
 
 }
 
@@ -54,6 +63,7 @@ const SQ7x8 Base::getY() const {
 void Base::setY(const SQ7x8 value) {
 
   _y = value;
+  _newY = value;
 
 }
 
@@ -113,6 +123,13 @@ void Base::clearImage(int16_t frame) {
   
 }
 
+void Base::updatePosition() {
+
+  _x = _newX;
+  _y = _newY;
+  
+}
+
 const SQ7x8 Base::getNewX() const {
 
   return _newX;
@@ -120,7 +137,9 @@ const SQ7x8 Base::getNewX() const {
 }
 
 void Base::setNewX(const SQ7x8 value) {
-
+//  Serial.print("  --  ");
+//Serial.print(static_cast<float>(value));
+//  Serial.print("  --  ");
   _newX = value;
 
 }

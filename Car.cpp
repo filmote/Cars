@@ -21,14 +21,13 @@ Car::Car(uint8_t name, SQ7x8 x, SQ7x8 y, SQ7x8 speedX, const uint8_t *bitmapRef,
 
 }
 
-bool Car::operator==(const Car& rhs) const {
-  return (this->getName() == rhs.getName());
+bool Car::operator==(const Car &c) const {
+  return (this->getName() == c.getName());
 }
 
-bool Car::operator!=(const Car& rhs) const {
-  return (this->getName() != rhs.getName());
+bool Car::operator!=(const Car &c) const {
+  return (this->getName() != c.getName());
 }
-
 
 void Car::calcNewPosition(uint8_t pixels, int16_t roadUpper, int16_t roadLower) {
 
@@ -383,13 +382,5 @@ void Car::clearImage(int16_t frame) {
     Sprites::drawErase(this->getX().GetInteger(), this->getY().GetInteger(), _bitmap, frame);
   }
   
-}
-
-bool Car::collide(Rect rect1, Rect rect2) const {
-  
-  return !(rect2.x                >= rect1.x + rect1.width  ||
-           rect2.x + rect2.width  <= rect1.x                ||
-           rect2.y                >= rect1.y + rect1.height ||
-           rect2.y + rect2.height <= rect1.y);
 }
 

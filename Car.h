@@ -13,9 +13,10 @@ class Car : public Base {
   public:  
     Car(uint8_t name, SQ7x8 x, SQ7x8 y, SQ7x8 speedX, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType);
     
-    bool operator==(const Car &rhs) const; 
-    bool operator!=(const Car &rhs) const; 
-    
+    bool operator==(const Car &c) const; 
+    bool operator!=(const Car &c) const; 
+
+        
     void debug() const;
     
 //    void move(uint8_t pixels, int16_t roadUpper, int16_t roadLower);
@@ -40,7 +41,6 @@ class Car : public Base {
     void setRoadLower(const int16_t value);
   
   private:
-    bool collide(Rect rect1, Rect rect2) const;
     bool _enabled;
     uint8_t _name;
     const Car *_cars;

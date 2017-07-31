@@ -15,8 +15,11 @@ class Base {
 
      Rect getRect() const;
      Rect getRect(int x, int y) const;
+     Rect getNewRect() const;
+
      void renderImage(int16_t frame);
      void clearImage(int16_t frame);
+     void updatePosition();
      
      const SQ7x8 getX() const;
      const SQ7x8 getY() const;
