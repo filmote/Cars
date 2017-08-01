@@ -31,7 +31,7 @@ bool Car::operator!=(const Car &c) const {
 
 void Car::calcNewPosition(uint8_t pixels, int16_t roadUpper, int16_t roadLower) {
 
-  SQ7x8 x = this->getX() - pixels - this->getSpeedX();
+  SQ7x8 x = this->getX() - pixels + this->getSpeedX();
   SQ7x8 y = this->getY();
 
   if (x >= 0) {  // No steering for cars leaving screen ..
@@ -126,193 +126,6 @@ void Car::calcNewPosition(uint8_t pixels, int16_t roadUpper, int16_t roadLower) 
 
 }
 
-
-
-/*
- *  Simply scrolling the images to the left does not force the image to be rendered again.
- * /
-void Car::move(uint8_t pixels, int16_t roadUpper, int16_t roadLower) {
-
-  if (this->getEnabled()) {
-
-    bool noCollisions_XY = true;
-    bool noCollisions_X = true;
-    bool noCollisions_Y = true;
-  
-    SQ7x8 x = this->getX() - pixels - this->getSpeedX();
-    SQ7x8 y = this->getY();
-
-    if (x >= 0) {  // No steering for cars leaving screen ..
-      
-      switch (_steeringType) {
-    
-        case (SteeringType::FollowRoad):
-    
-          if (_roadUpper > 0 && _roadLower > 0) {
-    
-            if (_roadUpper > roadUpper) {      // Road is going up.
-              y = y - 2;
-            }
-            else if (_roadUpper < roadUpper) {      // Road is going down.
-              y = y + 2;
-            }
-            
-          }
-    
-          break;
-    
-        case (SteeringType::ZigZag):
-
-          if (_goingUp) {
-    
-            if (y.GetInteger() > roadUpper) {
-              y = y - _speedY;        
-            }
-            else {
-              _goingUp = !_goingUp;
-            }
-            
-          }
-          else {
-            if (y.GetInteger() + (this->getHeight()) < roadLower) {
-              y = y + _speedY;        
-            }
-            else {
-              _goingUp = !_goingUp;
-            }
-            
-          }
-          
-          break;
-    
-        case (SteeringType::Random):
-   
-          randomCount--;
-          
-          if (randomCount == 0) {
-            
-            if (randomNumber > 0) {
-              randomNumber = 0;
-            }
-            else {
-              randomNumber = random((uint8_t)RoadType::First, (uint8_t)RoadType::Count);   
-            }
-      
-            randomCount = random(15, 30);
-            
-          }
-          
-          switch ((RoadType)randomNumber) {
-            
-            case RoadType::Straight:
-              break;
-              
-            case RoadType::Up:
-//Serial.println("Up");
-              if (y > roadUpper) {
-                y = y - _speedY;
-              }
-              break;
-              
-            case RoadType::Down:
-//Serial.println("Down");
-              if (y < roadLower) {
-                y = y + _speedY;
-              }
-              break;
-              
-          }
-          
-          break;
-          
-      }
-      
-    }
-    
-    for (uint8_t i = 0; i < 3; ++i) {
-  
-      const Car &car = _cars[i];
- //     car.debug();
-  
-      if (car != *this && car.getEnabled()) {
-
-        
-        if (collide(car.getRect(), this->getRect(x.GetInteger(), y.GetInteger()))) {
-
-          noCollisions_XY = false;
-          
-
-          if (collide(car.getRect(), this->getRect(x.GetInteger(), this->getY().GetInteger()))) {
-
-            noCollisions_X = false;
-            
-          }
-
-          else if (collide(car.getRect(), this->getRect(this->getX().GetInteger(), y.GetInteger()))) {
-
-            noCollisions_Y = false;
-
-          }
-  
-//          this->debug();
-          break;
-  
-        }
-  
-      }
-  
-    }
-
-    // No collision occured with this 
-    if (noCollisions_XY) {
-//Serial.println("noCollisions_XY");      
-
-      this->setX(x); 
-      this->setY(y); 
-  
-    }
-    else {
-      
-      if (noCollisions_X) { 
-//Serial.println("noCollisions_X");      
-        this->setX(x); 
-      }
-      else  if (noCollisions_Y) { 
-//Serial.println("noCollisions_Y");      
-        this->setY(y); 
-      }
-      else {
-        this->setX(this->getX() - this->getSpeedX()); 
-      }
-      
-
-    }
-
-    _roadUpper = roadUpper;
-    _roadLower = roadLower;
-  
-//  Serial.print("this->getWidth(): ");
-//  Serial.print(this->getWidth());
-//  Serial.print(", this->getX(): ");
-//  Serial.print(this->getX().GetInteger());
-//  Serial.print(", enabled: ");
-//  Serial.print(_enabled);
-    _enabled = (this->getWidth() + this->getX().GetInteger() > 0);
-//  Serial.print(", ");
-//  Serial.println(_enabled);
-
-//    if (!_enabled) {
-//      Serial.print(F("Car_"));
-//      Serial.print(this->getName());
-//      Serial.println(F(" enabled = false"));
-//    }
-
-  }
-  
-}
-
-*/
-
 const bool Car::getEnabled() const {
 
   return _enabled;
@@ -372,6 +185,9 @@ void Car::renderImage(int16_t frame) {
 
   if (this->getEnabled() && this->getX().GetInteger() + this->getWidth() >= 0 && this->getX().GetInteger() < WIDTH) {
     Sprites::drawExternalMask(this->getX().GetInteger(), this->getY().GetInteger(), _bitmap, _mask, frame, frame);
+  }
+  else if (this->getX().GetInteger() + this->getWidth() < 0) {
+    this->setEnabled(false);
   }
 
 }

@@ -67,6 +67,18 @@ void Base::setY(const SQ7x8 value) {
 
 }
 
+const SQ7x8 Base::getDeltaX() const {
+
+  return _newX - _x;
+
+}
+
+const SQ7x8 Base::getDeltaY() const {
+
+  return _newY - _y;
+
+}
+
 uint8_t Base::getWidth() const {
 
   return pgm_read_byte(&_bitmap[0]);

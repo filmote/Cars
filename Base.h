@@ -25,6 +25,8 @@ class Base {
      const SQ7x8 getY() const;
      const SQ7x8 getNewX() const;
      const SQ7x8 getNewY() const;
+     const SQ7x8 getDeltaX() const;
+     const SQ7x8 getDeltaY() const;
 
      void setX(const SQ7x8 value);
      void setY(const SQ7x8 value);

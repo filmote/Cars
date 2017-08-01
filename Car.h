@@ -19,7 +19,6 @@ class Car : public Base {
         
     void debug() const;
     
-//    void move(uint8_t pixels, int16_t roadUpper, int16_t roadLower);
     void calcNewPosition(uint8_t pixels, int16_t roadUpper, int16_t roadLower); 
     void renderImage(int16_t frame);
     void clearImage(int16_t frame);
@@ -47,8 +46,6 @@ class Car : public Base {
     SteeringType _steeringType;
     SQ7x8 _speedX;      
     SQ7x8 _speedY;  
-
-
 
 };
 #endif
