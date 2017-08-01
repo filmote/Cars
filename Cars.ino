@@ -108,7 +108,10 @@ void setup() {
   Sprites::drawOverwrite(0, 0, Hannibal, frame);
   arduboy.display();
 
-  //delay(10000);
+  while (!arduboy.pressed(A_BUTTON)) {
+    delay(100);
+  }
+  
   arduboy.clear();
 
 }
