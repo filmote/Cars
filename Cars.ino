@@ -28,17 +28,21 @@ ArduboyTones sound(arduboy.audio.on);
 
 #define ROAD_OFFSET_UPPER             22
 #define ROAD_OFFSET_LOWER             2
+#define ROAD_Y_MIN                    -18 
+#define ROAD_Y_MAX                    -6 
 
 RoadElement roadElements[17];
 Road road = { 0, -16, 64, RoadType::Straight, 0, 2 };
 Player player = {20, 24, car_player, mask_player};
 
-const byte* car_images[] = { car_01, car_02, car_03, car_04, car_05, car_06, car_07, car_08 };
-const byte* car_masks[] =  { mask_01, mask_02, mask_03, mask_04, mask_05, mask_06, mask_07, mask_08 };
-const byte* obstacle_images[] = { roughPatch, crossing };
-const byte* obstacle_masks[] = { roughPatch, crossing };
-const byte* roadside_images[] = { tree, bush };
-const byte* roadside_masks[] = { mask_tree, mask_bush };
+const byte *car_images[] = { car_01, car_02, car_03, car_04, car_05, car_06, car_07, car_08 };
+const byte *car_masks[] =  { mask_01, mask_02, mask_03, mask_04, mask_05, mask_06, mask_07, mask_08 };
+const byte *obstacle_images[] = { roughPatch, crossing };
+const byte *obstacle_masks[] = { roughPatch, crossing };
+const byte *roadside_images[] = { tree, bush };
+const byte *roadside_masks[] = { mask_tree, mask_bush };
+const byte *upper_road_images[] = { upper_road, upper_road_up, upper_road_down, upper_road_fadeout, upper_road_fadein };
+const byte *lower_road_images[] = { lower_road, lower_road_up, lower_road_down, lower_road_fadeout, lower_road_fadein };
 
 Car cars[3] = {
   {1, -80, 0, 0, car_images[2], car_masks[2], cars, SteeringType::ZigZag},
@@ -204,7 +208,7 @@ void loop() {
 
   // Should we launch another roadside item?  Only if we have enough roadside to render it against.
 
-  if (road.y == -18 || road.y == -6) { 
+  if (road.y == ROAD_Y_MIN || road.y == ROAD_Y_MAX) { 
 
     --roadsideLaunchCountdown;
     
@@ -213,7 +217,7 @@ void loop() {
       for (uint8_t roadsideNumber = 0; roadsideNumber < NUMBER_OF_ROADSIDES; ++roadsideNumber) {
   
         if (!roadsides[roadsideNumber].getEnabled()) { 
-          launchRoadside(roadsideNumber, (road.y == -6)); 
+          launchRoadside(roadsideNumber, (road.y == ROAD_Y_MIN)); 
           break;
         }
   
@@ -413,98 +417,6 @@ Sprites::drawExternalMask(103, 2, littleCar, littleCar_Mask, frame, frame);
 }
 
 
-/* -----------------------------------------------------------------------------------------------------------------------------
- *  Draw road.
- * -----------------------------------------------------------------------------------------------------------------------------
- * 
- * The road is always a fixed width high.
- * The road is stored in 17 x 8 pixel wide images and they are rendered using a pixel offset in the road structure ..
- *       
- */
-void drawRoad() {
-
-  if (road.x == 6) {
-      
-    road.x = -scrollIncrement;
-    road.type = RoadType::Straight;
-    
-    road.randomCount--;
-    
-    if (road.randomCount == 0) {
-      
-      if (road.randomNumber > 0) {
-        road.randomNumber = 0;
-      }
-      else {
-        road.randomNumber = random((uint8_t)RoadType::First, (uint8_t)RoadType::Count);   
-      }
-
-      road.randomCount = random(2, 6);
-      
-    }
-
-    switch ((RoadType)road.randomNumber) {
-      
-      case RoadType::Straight:
-        break;
-        
-      case RoadType::Up:
-        if (road.y > -18) {
-          road.y-=2;
-          road.type = RoadType::Up;
-        }
-        break;
-        
-      case RoadType::Down:
-        if (road.y < -6) {   // height = 64, -2 height = 72, -4 height = 68, -10
-          road.y+=2;
-          road.type = RoadType::Down;
-        }
-        break;
-        
-    }
-   
-    RoadElement * pt = roadElements;
-	  memmove(static_cast<void*>(&pt[0]), static_cast<const void*>(&pt[1]), 16 * sizeof(RoadElement));
-
-    roadElements[16].upperLimit = road.y;
-    roadElements[16].lowerLimit = road.y + road.height;
-    roadElements[16].roadType = road.type;
-
-  }
-
-  road.x+=scrollIncrement;
-
-
-  // Render the road.  
- 
-  for (idx = 0; idx < 17; ++idx) {
- 
-    int8_t upperLimitOffset = 0;
-    int8_t lowerLimitOffset = 0;
-  
-    switch (roadElements[idx].roadType) {
-      
-      case RoadType::Straight:
-        break;
-       
-      case RoadType::Up:
-        upperLimitOffset = 0;
-        break;
-       
-      case RoadType::Down:
-        lowerLimitOffset = 0; 
-        break;
-        
-    }
-
-    Sprites::drawOverwrite((idx * 8) - road.x, roadElements[idx].upperLimit + upperLimitOffset, upper_road, frame);   
-    Sprites::drawOverwrite((idx * 8) - road.x, roadElements[idx].lowerLimit + lowerLimitOffset, lower_road, frame);   
-
-  }
-
-}
-
 
 /* -----------------------------------------------------------------------------------------------------------------------------
  *  Get the upper limit of the road at position X
@@ -552,6 +464,7 @@ const int16_t getRoadElement_LowerLimit(SQ7x8 x) {
  *                            80                                       80                                     140
  *                           100                                       60                                     120
  *   CAR_LAUNCH_DELAY_MAX =  120       LAUNCH_SPEED_X_LOW_RANGE_MIN =  40       LAUNCH_SPEED_X_HI_RANGE_MIN = 100
+ *   
  *   
  * Assume a launch delay of 80.  This is 1/3 of the way between CAR_LAUNCH_DELAY_MIN and CAR_LAUNCH_DELAY_MAX.  To calculate 
  * the range for the random number, I hacve used the following formulas:
@@ -648,3 +561,112 @@ void launchCar(uint8_t carNumber, uint8_t launchDelay) {
   }
   
  }
+
+ 
+/* -----------------------------------------------------------------------------------------------------------------------------
+ *  Draw road.
+ * -----------------------------------------------------------------------------------------------------------------------------
+ * 
+ * The road is always a fixed width high.
+ * The road is stored in 17 x 8 pixel wide images and they are rendered using a pixel offset in the road structure ..
+ *       
+ */
+void drawRoad() {
+
+  if (road.x == 6) {
+      
+    road.x = -scrollIncrement;
+    road.type = RoadType::Straight;
+    
+    road.randomCount--;
+    
+    if (road.randomCount == 0) {
+      
+      if (road.randomNumber > 0) {
+        road.randomNumber = 0;
+      }
+      else {
+        road.randomNumber = random((uint8_t)RoadType::First, (uint8_t)RoadType::Count);   
+      }
+
+      road.randomCount = random(2, 6);
+      
+    }
+
+    switch ((RoadType)road.randomNumber) {
+      
+      case RoadType::Straight:
+        break;
+        
+      case RoadType::Up:
+        if (road.y > -18) {
+          road.y-=2;
+          road.type = RoadType::Up;
+        }
+        break;
+        
+      case RoadType::Down:
+        if (road.y < -6) {   // height = 64, -2 height = 72, -4 height = 68, -10
+          road.y+=2;
+          road.type = RoadType::Down;
+        }
+        break;
+        
+    }
+   
+    RoadElement * pt = roadElements;
+    memmove(static_cast<void*>(&pt[0]), static_cast<const void*>(&pt[1]), 16 * sizeof(RoadElement));
+
+    roadElements[16].upperLimit = road.y;
+    roadElements[16].lowerLimit = road.y + road.height;
+    roadElements[16].roadType = road.type;
+
+  }
+
+  road.x+=scrollIncrement;
+
+//debugRoad();
+  // Render the road.  
+ 
+  for (idx = 0; idx < 17; ++idx) {
+  
+    int8_t upperLimitOffset = 0;
+    int8_t lowerLimitOffset = 0;
+  
+    switch (roadElements[idx].roadType) {
+      
+      case RoadType::Straight:
+        break;
+       
+      case RoadType::Up:
+        upperLimitOffset = 2;
+        break;
+       
+      case RoadType::Down:
+        lowerLimitOffset = -2; 
+        break;
+        
+    }
+    
+    Sprites::drawOverwrite((idx * 8) - road.x, roadElements[idx].upperLimit + upperLimitOffset, upper_road_images[((uint8_t)roadElements[idx].roadType)], frame);   
+    Sprites::drawOverwrite((idx * 8) - road.x, roadElements[idx].lowerLimit + lowerLimitOffset, lower_road_images[((uint8_t)roadElements[idx].roadType)], frame);   
+
+  }
+
+}
+
+void debugRoad() {
+    Serial.print("2) ");
+  for (int x = 0; x < 17; ++x) {
+    Serial.print('{');
+    Serial.print(roadElements[x].upperLimit);
+    Serial.print(',');
+    Serial.print(roadElements[x].lowerLimit);
+    Serial.print(',');
+    Serial.print((int)roadElements[x].roadType);
+    Serial.print('}');
+  }
+  Serial.println(' ');
+
+}
+
