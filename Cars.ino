@@ -599,14 +599,14 @@ void drawRoad() {
         break;
         
       case RoadType::Up:
-        if (road.y > -18) {
+        if (road.y > ROAD_Y_MIN) {
           road.y-=2;
           road.type = RoadType::Up;
         }
         break;
         
       case RoadType::Down:
-        if (road.y < -6) {   // height = 64, -2 height = 72, -4 height = 68, -10
+        if (road.y < ROAD_Y_MAX) {   // height = 64, -2 height = 72, -4 height = 68, -10
           road.y+=2;
           road.type = RoadType::Down;
         }
