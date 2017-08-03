@@ -14,8 +14,8 @@ ArduboyTones sound(arduboy.audio.on);
 #define CAR_LAUNCH_DELAY_MAX          120
 #define CAR_LAUNCH_DELAY_MIN          60
 
-#define OBSTACLE_LAUNCH_DELAY_MAX     400
-#define OBSTACLE_LAUNCH_DELAY_MIN     200
+#define OBSTACLE_LAUNCH_DELAY_MAX     300
+#define OBSTACLE_LAUNCH_DELAY_MIN     125
 
 #define ROADSIDE_LAUNCH_DELAY_MAX     50
 #define ROADSIDE_LAUNCH_DELAY_MIN     25
@@ -112,6 +112,7 @@ void setup() {
   Sprites::drawOverwrite(0, 0, Hannibal, frame);
   arduboy.display();
 
+  sound.tones(score);
   while (!arduboy.pressed(A_BUTTON)) {
     delay(100);
   }
@@ -149,17 +150,17 @@ void loop() {
 
   // Handle player movement ..
   
-  if (arduboy.pressed(UP_BUTTON) && player.getY() > 0)                                { player.setNewY(player.getY() - static_cast<SQ7x8>(0.5)); }
-  if (arduboy.pressed(DOWN_BUTTON) && player.getY() < HEIGHT - player.getHeight())    { player.setNewY(player.getY() + static_cast<SQ7x8>(0.5)); }
-  if (arduboy.pressed(LEFT_BUTTON) && player.getX() > 0)                              { player.setNewX(player.getX() - static_cast<SQ7x8>(0.75)); }
-  if (arduboy.pressed(RIGHT_BUTTON) && player.getX() < 64)                            { player.setNewX(player.getX() + static_cast<SQ7x8>(1.00)); }
+  if (arduboy.pressed(UP_BUTTON) && player.getY() > 0 && !collideWithCarAbove())                                { player.setY(player.getY() - static_cast<SQ7x8>(0.5)); }
+  if (arduboy.pressed(DOWN_BUTTON) && player.getY() < HEIGHT - player.getHeight() && !collideWithCarBelow())    { player.setY(player.getY() + static_cast<SQ7x8>(0.5)); }
+  if (arduboy.pressed(LEFT_BUTTON) && player.getX() > 0)                                                     { player.setX(player.getX() - static_cast<SQ7x8>(0.75)); }
+  if (arduboy.pressed(RIGHT_BUTTON) && player.getX() < 64 && !collideWithCarInFront())                          { Serial.println("GoFroward");player.setX(player.getX() + static_cast<SQ7x8>(1.00)); }
 
 
 
   // Is the player in the rough ?
 
-  if (player.getY().GetInteger() < getRoadElement_UpperLimit(player.getX()) + ROAD_OFFSET_UPPER)                         { sound.tones(sound_drivingInRough); player.setNewX(player.getX() - static_cast<SQ7x8>(0.4)); }
-  if (player.getY().GetInteger() + player.getHeight() > getRoadElement_LowerLimit(player.getX()) + ROAD_OFFSET_LOWER)    { sound.tones(sound_drivingInRough); player.setNewX(player.getX() - static_cast<SQ7x8>(0.4)); }
+  if (player.getY().GetInteger() < getRoadElement_UpperLimit(player.getX()) + ROAD_OFFSET_UPPER)                         { sound.tones(sound_drivingInRough); player.setX(player.getX() - static_cast<SQ7x8>(0.4)); }
+  if (player.getY().GetInteger() + player.getHeight() > getRoadElement_LowerLimit(player.getX()) + ROAD_OFFSET_LOWER)    { sound.tones(sound_drivingInRough); player.setX(player.getX() - static_cast<SQ7x8>(0.4)); }
 
 
 
@@ -272,7 +273,7 @@ void loop() {
       // Only move the car back once - even if it is touching multiple cars ..
       
       if (!collisionAlreadyDetected) { 
-        player.setNewX(player.getX() - static_cast<SQ7x8>(0.4));
+        player.setX(player.getX() - static_cast<SQ7x8>(0.4));
         sound.tones(sound_bump); 
         collisionAlreadyDetected = true;
       }
@@ -365,7 +366,6 @@ void loop() {
 
   // Update the position of the player and the cars ..
   
-  player.updatePosition();
   for (idx = 0; idx < NUMBER_OF_CARS; ++idx) {
     if (cars[idx].getEnabled()) { cars[idx].updatePosition(); }
   }
@@ -670,3 +670,85 @@ void debugRoad() {
 
 }
 
+bool collideWithCarAbove() {
+
+  player.setNewX(player.getX());
+  player.setNewY(player.getY() - static_cast<SQ7x8>(0.5));
+
+  for (idx = 0; idx < NUMBER_OF_CARS; ++idx) {
+      
+    if (cars[idx].getEnabled()) { 
+
+      if (collide(player.getNewRect(), cars[idx].getRect()) & (uint8_t)Direction::Up != 0) {
+        return true;
+      }
+
+    }
+
+  }
+
+  return false;
+  
+}
+
+bool collideWithCarBelow() {
+
+  player.setNewX(player.getX());
+  player.setNewY(player.getY() + static_cast<SQ7x8>(0.5));
+
+  for (idx = 0; idx < NUMBER_OF_CARS; ++idx) {
+
+    if (cars[idx].getEnabled()) { 
+
+      if (collide(player.getNewRect(), cars[idx].getRect()) & (uint8_t)Direction::Down != 0) {
+        return true;
+      }
+
+    }
+
+  }
+
+  return false;
+  
+}
+
+bool collideWithCarInFront() {
+
+  player.setNewX(player.getX());
+  player.setNewY(player.getY() + static_cast<SQ7x8>(0.5));
+
+  for (idx = 0; idx < NUMBER_OF_CARS; ++idx) {
+
+    if (cars[idx].getEnabled()) { 
+
+      if (collide(player.getNewRect(), cars[idx].getRect()) & (uint8_t)Direction::Right != 0) {
+        return true;
+      }
+
+    }
+
+  }
+
+  return false;
+  
+}
+
+uint8_t collide(Rect rect1, Rect rect2) {
+
+  uint8_t direction = (uint8_t)Direction::None;
+  
+  if (!(rect2.x                >= rect1.x + rect1.width  ||
+        rect2.x + rect2.width  <= rect1.x                ||
+        rect2.y                >= rect1.y + rect1.height ||
+        rect2.y + rect2.height <= rect1.y)) {
+
+    if (rect1.x + rect1.width - rect2.x > 0)    direction = direction | (uint8_t)Direction::Right;     // Rect 2 is in front of Rect 1?
+    if (rect2.x + rect2.width - rect1.x > 0)    direction = direction | (uint8_t)Direction::Left;      // Rect 2 is behind Rect 1?
+    if (rect2.y + rect2.height - rect1.y > 0);  direction = direction | (uint8_t)Direction::Up;        // Rect 2 is above Rect 1?
+    if (rect1.y + rect1.height - rect2.y > 0);  direction = direction | (uint8_t)Direction::Down;      // Rect 2 is below Rect 1?
+
+  }
+    
+  return direction;
+
+}
