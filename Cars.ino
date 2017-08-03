@@ -9,7 +9,7 @@
 #include "Sounds.h"
 
 Arduboy2 arduboy; 
-ArduboyTones sound(arduboy.audio.on);
+ArduboyTones sound(arduboy.audio.off);
 
 #define CAR_LAUNCH_DELAY_MAX          120
 #define CAR_LAUNCH_DELAY_MIN          60
@@ -152,8 +152,8 @@ void loop() {
   
   if (arduboy.pressed(UP_BUTTON) && player.getY() > 0 && !collideWithCarAbove())                                { player.setY(player.getY() - static_cast<SQ7x8>(0.5)); }
   if (arduboy.pressed(DOWN_BUTTON) && player.getY() < HEIGHT - player.getHeight() && !collideWithCarBelow())    { player.setY(player.getY() + static_cast<SQ7x8>(0.5)); }
-  if (arduboy.pressed(LEFT_BUTTON) && player.getX() > 0)                                                     { player.setX(player.getX() - static_cast<SQ7x8>(0.75)); }
-  if (arduboy.pressed(RIGHT_BUTTON) && player.getX() < 64 && !collideWithCarInFront())                          { Serial.println("GoFroward");player.setX(player.getX() + static_cast<SQ7x8>(1.00)); }
+  if (arduboy.pressed(LEFT_BUTTON) && player.getX() > 0)                                                        { player.setX(player.getX() - static_cast<SQ7x8>(0.75)); }
+  if (arduboy.pressed(RIGHT_BUTTON) && player.getX() < 64 && !collideWithCarInFront())                          { Serial.println("GoFroward");player.setX(player.getX() + static_cast<SQ7x8>(0.80)); }
 
 
 
@@ -680,6 +680,7 @@ bool collideWithCarAbove() {
     if (cars[idx].getEnabled()) { 
 
       if (collide(player.getNewRect(), cars[idx].getRect()) & (uint8_t)Direction::Up != 0) {
+        Serial.println("collideWithCarAbove");
         return true;
       }
 
@@ -701,6 +702,7 @@ bool collideWithCarBelow() {
     if (cars[idx].getEnabled()) { 
 
       if (collide(player.getNewRect(), cars[idx].getRect()) & (uint8_t)Direction::Down != 0) {
+        Serial.println("collideWithCarBelow");
         return true;
       }
 
@@ -722,6 +724,7 @@ bool collideWithCarInFront() {
     if (cars[idx].getEnabled()) { 
 
       if (collide(player.getNewRect(), cars[idx].getRect()) & (uint8_t)Direction::Right != 0) {
+        Serial.println("collideWithCarInFront");
         return true;
       }
 
@@ -736,7 +739,26 @@ bool collideWithCarInFront() {
 uint8_t collide(Rect rect1, Rect rect2) {
 
   uint8_t direction = (uint8_t)Direction::None;
-  
+
+//  Serial.print("rect1.x=");
+//  Serial.print(rect1.x);
+//  Serial.print(", rect1.width=");
+//  Serial.print(rect1.width);
+//  Serial.print(", rect1.y=");
+//  Serial.print(rect1.y);
+//  Serial.print(", rect1.height=");
+//  Serial.print(rect1.height);
+//  Serial.print("    ");
+//  Serial.print("rect2.x=");
+//  Serial.print(rect2.x);
+//  Serial.print(", rect2.width=");
+//  Serial.print(rect2.width);
+//  Serial.print(", rect2.y=");
+//  Serial.print(rect2.y);
+//  Serial.print(", rect2.height=");
+//  Serial.print(rect2.height);
+//  Serial.println("");
+ 
   if (!(rect2.x                >= rect1.x + rect1.width  ||
         rect2.x + rect2.width  <= rect1.x                ||
         rect2.y                >= rect1.y + rect1.height ||
