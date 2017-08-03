@@ -9,7 +9,7 @@
 #include "Sounds.h"
 
 Arduboy2 arduboy; 
-ArduboyTones sound(arduboy.audio.off);
+ArduboyTones sound(arduboy.audio.on);
 
 #define CAR_LAUNCH_DELAY_MAX          120
 #define CAR_LAUNCH_DELAY_MIN          60
@@ -656,7 +656,7 @@ void drawRoad() {
 }
 
 void debugRoad() {
-    Serial.print("2) ");
+
   for (int x = 0; x < 17; ++x) {
     Serial.print('{');
     Serial.print(roadElements[x].upperLimit);
@@ -666,7 +666,7 @@ void debugRoad() {
     Serial.print((int)roadElements[x].roadType);
     Serial.print('}');
   }
-  Serial.println(' ');
+  Serial.println('');
 
 }
 
@@ -680,7 +680,7 @@ bool collideWithCarAbove() {
     if (cars[idx].getEnabled()) { 
 
       if (collide(player.getNewRect(), cars[idx].getRect()) & (uint8_t)Direction::Up != 0) {
-        Serial.println("collideWithCarAbove");
+//      Serial.println("collideWithCarAbove");
         return true;
       }
 
@@ -702,7 +702,7 @@ bool collideWithCarBelow() {
     if (cars[idx].getEnabled()) { 
 
       if (collide(player.getNewRect(), cars[idx].getRect()) & (uint8_t)Direction::Down != 0) {
-        Serial.println("collideWithCarBelow");
+//      Serial.println("collideWithCarBelow");
         return true;
       }
 
@@ -724,7 +724,7 @@ bool collideWithCarInFront() {
     if (cars[idx].getEnabled()) { 
 
       if (collide(player.getNewRect(), cars[idx].getRect()) & (uint8_t)Direction::Right != 0) {
-        Serial.println("collideWithCarInFront");
+//      Serial.println("collideWithCarInFront");
         return true;
       }
 
