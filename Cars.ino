@@ -482,6 +482,7 @@ const int16_t getRoadElement_UpperLimit(SQ7x8 x) {
   
 }
 
+
 /* -----------------------------------------------------------------------------------------------------------------------------
  *  Get the lower limit of the road at position X
  */
@@ -606,7 +607,6 @@ void launchCar(uint8_t carNumber, uint8_t launchDelay) {
   
 }
 
-
  
 /* -----------------------------------------------------------------------------------------------------------------------------
  *  Draw road.
@@ -724,6 +724,7 @@ bool collideWithCarAbove() {
   return false;
   
 }
+
 
 /* -----------------------------------------------------------------------------------------------------------------------------
  *  If the player was to move down, would they crash into another car?
