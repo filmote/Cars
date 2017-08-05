@@ -10,9 +10,19 @@
 
 class Player : public Base {
   
-   public:
+  public:
    
-     Player(SQ7x8 x, SQ7x8 y, const uint8_t *bitmapRef, const uint8_t *maskRef);
+    Player(SQ7x8 x, SQ7x8 y, SQ7x8 fuel, const uint8_t *bitmapRef, const uint8_t *maskRef);
+    
+    const SQ7x8 getFuel() const;
+    const uint16_t getScore() const;
 
+    void setFuel(const SQ7x8 value);
+    void setScore(const uint16_t value);
+  
+  private:
+    uint16_t _score;
+    SQ7x8 _fuel;
+    
 };
 #endif

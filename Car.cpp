@@ -164,7 +164,7 @@ const SQ7x8 Car::getSpeedX() const {
 
 void Car::setSpeedX(const SQ7x8 value) {
 
- _speedX = value;
+  _speedX = value;
 
 }
 
@@ -176,7 +176,7 @@ const SQ7x8 Car::getSpeedY() const {
 
 void Car::setSpeedY(const SQ7x8 value) {
 
- _speedY = value;
+  _speedY = value;
 
 }
 

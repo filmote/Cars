@@ -22,6 +22,17 @@ enum class SteeringType : uint8_t {
   Last = Random,
 };
 
+
+enum class ObstacleType : uint8_t {
+  RoughRoad,
+  Crossing,  
+  Fuel,
+  Jewel,
+  Count,
+  First = RoughRoad,
+  Last = Crossing,
+};
+
 struct PointSQ7x8 {
   SQ7x8 x;
   SQ7x8 y;
@@ -42,14 +53,6 @@ struct Road {
   uint8_t randomCount;
 };
 
-/*
-struct Player {
-  uint8_t x;
-  uint8_t y;
-  const uint8_t height;
-  const uint8_t width;
-};
-*/
 
 enum Direction : uint8_t {
   None = 0,
@@ -58,4 +61,13 @@ enum Direction : uint8_t {
   Left = 4,
   Right = 8,
 };
+
+constexpr Direction operator |(const Direction &left, const Direction &right) {
+  return static_cast<Direction>(static_cast<uint8_t>(left) | static_cast<uint8_t>(right));
+}
+
+constexpr Direction operator &(const Direction &left, const Direction &right) {
+  return static_cast<Direction>(static_cast<uint8_t>(left) & static_cast<uint8_t>(right));
+}
+
 #endif

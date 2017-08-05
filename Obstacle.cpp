@@ -28,6 +28,18 @@ void Obstacle::setEnabled(const bool value) {
 
 }
 
+const ObstacleType Obstacle::getObstacleType() const {
+
+  return _obstacleType;
+
+}
+
+void Obstacle::setObstacleType(const ObstacleType value) {
+
+  _obstacleType = value;
+  
+}
+
 void Obstacle::renderImage(int16_t frame) {
 
   if (this->getEnabled() && this->getX().GetInteger() + this->getWidth() >= 0 && this->getX().GetInteger() < WIDTH) {

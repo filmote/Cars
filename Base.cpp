@@ -139,7 +139,7 @@ void Base::updatePosition() {
 
   _x = _newX;
   _y = _newY;
-  
+
 }
 
 const SQ7x8 Base::getNewX() const {

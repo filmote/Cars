@@ -9,7 +9,7 @@
 #include "Sounds.h"
 
 Arduboy2 arduboy; 
-ArduboyTones sound(arduboy.audio.on);
+ArduboyTones sound(arduboy.audio.off);
 
 #define CAR_LAUNCH_DELAY_MAX          120
 #define CAR_LAUNCH_DELAY_MIN          60
@@ -17,12 +17,9 @@ ArduboyTones sound(arduboy.audio.on);
 #define OBSTACLE_LAUNCH_DELAY_MAX     300
 #define OBSTACLE_LAUNCH_DELAY_MIN     125
 
-#define ROADSIDE_LAUNCH_DELAY_MAX     50
-#define ROADSIDE_LAUNCH_DELAY_MIN     25
-
 #define NUMBER_OF_CAR_IMAGES          8
 #define NUMBER_OF_CARS                3
-#define NUMBER_OF_OBSTACLES           3
+#define NUMBER_OF_OBSTACLES           4
 #define NUMBER_OF_ROADSIDES           6
 #define ROAD_IMAGES_HEIGHT            24
 
@@ -31,18 +28,20 @@ ArduboyTones sound(arduboy.audio.on);
 #define ROAD_Y_MIN                    -18 
 #define ROAD_Y_MAX                    -6 
 
+#define FUEL_MAX                      16
+#define FUEL_DECREMENT                0.010
+#define FUEL_DECREMENT_BOOST          0.005
+
 RoadElement roadElements[17];
 Road road = { 0, -16, 64, RoadType::Straight, 0, 2 };
-Player player = {20, 24, car_player, mask_player};
+Player player = {20, 24, FUEL_MAX, car_player, mask_player};
 
 const byte *car_images[] = { car_01, car_02, car_03, car_04, car_05, car_06, car_07, car_08 };
 const byte *car_masks[] =  { mask_01, mask_02, mask_03, mask_04, mask_05, mask_06, mask_07, mask_08 };
-const byte *obstacle_images[] = { roughPatch, crossing };
-const byte *obstacle_masks[] = { roughPatch, crossing };
-const byte *roadside_images[] = { tree, bush };
-const byte *roadside_masks[] = { mask_tree, mask_bush };
-const byte *upper_road_images[] = { upper_road, upper_road_up, upper_road_down, upper_road_fadeout, upper_road_fadein };
-const byte *lower_road_images[] = { lower_road, lower_road_up, lower_road_down, lower_road_fadeout, lower_road_fadein };
+const byte *obstacle_images[] = { roughPatch, crossing, fuel, jewel };
+const byte *obstacle_masks[] = { roughPatch, crossing, fuel_mask, jewel_mask };
+const byte *upper_road_images[] = { upper_road, upper_road_up, upper_road_down };
+const byte *lower_road_images[] = { lower_road, lower_road_up, lower_road_down };
 
 Car cars[3] = {
   {1, -80, 0, 0, car_images[2], car_masks[2], cars, SteeringType::ZigZag},
@@ -56,15 +55,6 @@ Obstacle obstacles[3] = {
   {-20, 24, obstacle_images[0], obstacle_masks[0]}
 };
 
-Obstacle roadsides[6] = {
-  {-20, 24, roadside_images[0], roadside_masks[0]},
-  {-20, 24, roadside_images[0], roadside_masks[0]},
-  {-20, 24, roadside_images[0], roadside_masks[0]},
-  {-20, 24, roadside_images[0], roadside_masks[0]},
-  {-20, 24, roadside_images[0], roadside_masks[0]},
-  {-20, 24, roadside_images[0], roadside_masks[0]}
-};
-
 
 const uint8_t scrollIncrement = 2;
 const uint8_t frame = 0;
@@ -74,7 +64,6 @@ int16_t idx = 0; // scratch variable.
 uint16_t carLaunchCountdown = CAR_LAUNCH_DELAY_MIN;
 uint16_t carLaunchDelay = CAR_LAUNCH_DELAY_MIN;  // Stores the carLaunchCountdown when launching a new car, the bigger the number. the faster the car can go.
 uint16_t obstacleLaunchCountdown = OBSTACLE_LAUNCH_DELAY_MIN;
-uint16_t roadsideLaunchCountdown = ROADSIDE_LAUNCH_DELAY_MIN;
 
 
 bool sortByNewX(Car x, Car y) {
@@ -112,7 +101,7 @@ void setup() {
   Sprites::drawOverwrite(0, 0, Hannibal, frame);
   arduboy.display();
 
-  sound.tones(score);
+  //sound.tones(score);
   while (!arduboy.pressed(A_BUTTON)) {
     delay(100);
   }
@@ -143,17 +132,17 @@ void loop() {
     obstacles[idx].clearImage(frame);
   }
 
-  for (idx = 0; idx < NUMBER_OF_ROADSIDES; ++idx) {
-    roadsides[idx].clearImage(frame);
-  }
 
 
   // Handle player movement ..
   
+  player.setFuel(player.getFuel() - static_cast<SQ7x8>(FUEL_DECREMENT));
+  
   if (arduboy.pressed(UP_BUTTON) && player.getY() > 0 && !collideWithCarAbove())                                { player.setY(player.getY() - static_cast<SQ7x8>(0.5)); }
   if (arduboy.pressed(DOWN_BUTTON) && player.getY() < HEIGHT - player.getHeight() && !collideWithCarBelow())    { player.setY(player.getY() + static_cast<SQ7x8>(0.5)); }
   if (arduboy.pressed(LEFT_BUTTON) && player.getX() > 0)                                                        { player.setX(player.getX() - static_cast<SQ7x8>(0.75)); }
-  if (arduboy.pressed(RIGHT_BUTTON) && player.getX() < 64 && !collideWithCarInFront())                          { Serial.println("GoFroward");player.setX(player.getX() + static_cast<SQ7x8>(0.80)); }
+  if (arduboy.pressed(RIGHT_BUTTON) && player.getX() < 64 && !collideWithCarInFront())                          { player.setFuel(player.getFuel() - static_cast<SQ7x8>(FUEL_DECREMENT_BOOST));
+                                                                                                                  player.setX(player.getX() + static_cast<SQ7x8>(0.80)); }
 
 
 
@@ -161,6 +150,44 @@ void loop() {
 
   if (player.getY().GetInteger() < getRoadElement_UpperLimit(player.getX()) + ROAD_OFFSET_UPPER)                         { sound.tones(sound_drivingInRough); player.setX(player.getX() - static_cast<SQ7x8>(0.4)); }
   if (player.getY().GetInteger() + player.getHeight() > getRoadElement_LowerLimit(player.getX()) + ROAD_OFFSET_LOWER)    { sound.tones(sound_drivingInRough); player.setX(player.getX() - static_cast<SQ7x8>(0.4)); }
+
+
+
+  // Has the player hit a obstacle?
+
+  for (idx = 0; idx < NUMBER_OF_OBSTACLES; ++idx) {
+    
+    if (obstacles[idx].getEnabled()) { 
+
+      if (arduboy.collide(player.getNewRect(), obstacles[idx].getRect())) {
+
+        switch (obstacles[idx].getObstacleType()) {
+
+          case ObstacleType::RoughRoad:
+            break;
+
+          case ObstacleType::Crossing:
+            break;
+
+          case ObstacleType::Fuel:
+Serial.println("Fuel top up");
+            player.setFuel(FUEL_MAX);
+            obstacles[idx].setEnabled(false);
+            break;
+
+          case ObstacleType::Jewel:
+Serial.println("Jewel");
+            player.setScore(player.getScore() + 1);
+            obstacles[idx].setEnabled(false);
+            break;
+
+        }
+        
+      }
+
+    }
+    
+  }
 
 
 
@@ -207,31 +234,6 @@ void loop() {
 
 
 
-  // Should we launch another roadside item?  Only if we have enough roadside to render it against.
-
-  if (road.y == ROAD_Y_MIN || road.y == ROAD_Y_MAX) { 
-
-    --roadsideLaunchCountdown;
-    
-    if (roadsideLaunchCountdown == 0) {
-
-      for (uint8_t roadsideNumber = 0; roadsideNumber < NUMBER_OF_ROADSIDES; ++roadsideNumber) {
-  
-        if (!roadsides[roadsideNumber].getEnabled()) { 
-          launchRoadside(roadsideNumber, (road.y == ROAD_Y_MIN)); 
-          break;
-        }
-  
-      }
-  
-      roadsideLaunchCountdown = random(ROADSIDE_LAUNCH_DELAY_MIN, ROADSIDE_LAUNCH_DELAY_MAX);
-              
-    }
-
-  }
-
-
-
   // Update the position of the obstacles .. (they don't move).
   
   for (idx = 0; idx < NUMBER_OF_OBSTACLES; ++idx) {
@@ -241,14 +243,6 @@ void loop() {
   }
   
 
-
-  // Update the position of the roadside things .. (they don't move).
-  
-  for (idx = 0; idx < NUMBER_OF_ROADSIDES; ++idx) {
-    if (roadsides[idx].getEnabled()) { 
-      roadsides[idx].move(scrollIncrement); 
-    }
-  }
 
 
   // Calculate the new positions of the car based on their movement type ..
@@ -265,23 +259,27 @@ void loop() {
 
   bool collisionAlreadyDetected = false;
 
-  for (idx = 0; idx < 3; ++idx) {
+  for (idx = 0; idx < NUMBER_OF_CARS; ++idx) {
 
-    if (arduboy.collide(player.getNewRect(), cars[idx].getNewRect())) {
-
-
-      // Only move the car back once - even if it is touching multiple cars ..
+    if (cars[idx].getEnabled()) {
       
-      if (!collisionAlreadyDetected) { 
-        player.setX(player.getX() - static_cast<SQ7x8>(0.4));
-        sound.tones(sound_bump); 
-        collisionAlreadyDetected = true;
+      if (arduboy.collide(player.getNewRect(), cars[idx].getNewRect())) {
+  
+  
+        // Only move the car back once - even if it is touching multiple cars ..
+        
+        if (!collisionAlreadyDetected) { 
+          player.setX(player.getX() - static_cast<SQ7x8>(0.4));
+          sound.tones(sound_bump); 
+          collisionAlreadyDetected = true;
+        }
+  
+        cars[idx].setNewX(cars[idx].getX() + static_cast<SQ7x8>(0.4));
+        
       }
-
-      cars[idx].setNewX(cars[idx].getX() + static_cast<SQ7x8>(0.4));
       
     }
-    
+        
   }
 
 
@@ -295,11 +293,11 @@ void loop() {
     
     checkCars = false;
 
-    for (uint8_t left = 0; left < 3; ++left) {
+    for (uint8_t left = 0; left < NUMBER_OF_CARS; ++left) {
       
       if (cars[left].getEnabled()) {
     
-        for (uint8_t right = left + 1; right < 3; ++right) {
+        for (uint8_t right = left + 1; right < NUMBER_OF_CARS; ++right) {
       
           if (cars[right].getEnabled()) {
    
@@ -322,31 +320,22 @@ void loop() {
 //              Serial.println("");
 
 
-              // We are about to move pne of the cars so this test will need to be done again ..
+              // We are about to move one of the cars so this test will need to be done again ..
 
               checkCars = true;
               cars[right].setNewX(cars[right].getNewX() + 2);
-  
+
 
               // Check to see if the new placement of the car is still causing a collision. If 
               // so bump the car up or down depending on which way the car has moved already ..
               
               if (arduboy.collide( cars[left].getNewRect(), cars[right].getNewRect() )) {
-
-//                Serial.print("Move from "); 
-//                Serial.print(static_cast<float>(cars[right].getY())); 
-//                Serial.print(" to "); 
-//                Serial.print(static_cast<float>(cars[right].getNewY())); 
-//                Serial.print(" = "); 
-//                Serial.print(static_cast<float>(cars[right].getDeltaY()));
-                
+               
                 if (cars[right].getDeltaY() < 0) { 
-//                  Serial.println(" moving down");                  
-                  cars[right].setNewX(cars[right].getNewX() + 1); 
+                  cars[right].setNewY(cars[right].getNewY() + 1); 
                 }
                 else if (cars[right].getDeltaY() > 0) { 
-//                  Serial.println(" moving up");                  
-                  cars[right].setNewX(cars[right].getNewX() - 1); 
+                  cars[right].setNewY(cars[right].getNewY() - 1); 
                 }
 
               }
@@ -373,10 +362,6 @@ void loop() {
   
   drawRoad();
 
-  for (idx = 0; idx < NUMBER_OF_ROADSIDES; ++idx) {
-    roadsides[idx].renderImage(frame);
-  }
-  
   for (idx = 0; idx < NUMBER_OF_OBSTACLES; ++idx) {
     obstacles[idx].renderImage(frame);
   }
@@ -387,13 +372,7 @@ void loop() {
 
   player.renderImage(frame);
 
-arduboy.fillRect(99,0,31,12, BLACK);
-arduboy.drawRect(100,0,28,11, WHITE);
-//arduboy.drawRect(108,2,5,6, WHITE);
-Sprites::drawExternalMask(103, 2, littleCar, littleCar_Mask, frame, frame);
-//Sprites::drawExternalMask(115, 2, littleCar, littleCar_Mask, frame, frame);
-//  Sprites::drawExternalMask(103, 2, digit_0, digit_mask, frame, frame);
-  Sprites::drawExternalMask(113, 2, digit_0, digit_mask, frame, frame);
+  renderScoreboard();
 
   arduboy.display();
   delay(10);
@@ -416,6 +395,82 @@ Sprites::drawExternalMask(103, 2, littleCar, littleCar_Mask, frame, frame);
   
 }
 
+
+/* -----------------------------------------------------------------------------------------------------------------------------
+ *  Render the scorebaord.
+ *  
+ *  The scorebaord alternates between two modes - points and fuel.
+ */
+uint16_t scoreFrameCnt;
+uint16_t scoreFuelFlash;
+
+#define SCOREBOARD_FUEL_FLASH_MAX       30
+#define SCOREBOARD_FRAME_COUNT_MAX      200
+#define SCOREBOARD_NUMBER_OF_FRAMES     2
+
+#define SCOREBOARD_OUTER_RECT_X         99
+#define SCOREBOARD_OUTER_RECT_Y         0
+#define SCOREBOARD_OUTER_RECT_WIDTH     29
+#define SCOREBOARD_OUTER_RECT_HEIGHT    12
+
+#define SCOREBOARD_INNER_RECT_X         SCOREBOARD_OUTER_RECT_X + 1
+#define SCOREBOARD_INNER_RECT_Y         SCOREBOARD_OUTER_RECT_Y
+#define SCOREBOARD_INNER_RECT_WIDTH     SCOREBOARD_OUTER_RECT_WIDTH - 1
+#define SCOREBOARD_INNER_RECT_HEIGHT    SCOREBOARD_OUTER_RECT_HEIGHT - 1
+
+#define SCOREBOARD_ICON_X               103
+#define SCOREBOARD_ICON_Y               2
+#define SCOREBOARD_DIGIT_1_X            111
+#define SCOREBOARD_DIGIT_2_X            116
+#define SCOREBOARD_DIGIT_3_X            121
+#define SCOREBOARD_DIGIT_Y              2
+
+#define SCOREBOARD_FUEL_BAR_TOP         2
+#define SCOREBOARD_FUEL_BAR_BOTTOM      8
+#define SCOREBOARD_FUEL_BAR_LEFT        110
+
+void renderScoreboard() {
+
+   uint16_t player_score = player.getScore();
+
+
+   // Increment the frame count
+
+   ++scoreFuelFlash;  if (scoreFuelFlash > SCOREBOARD_FUEL_FLASH_MAX) { scoreFuelFlash = 0; }
+   ++scoreFrameCnt;  if (scoreFrameCnt > (SCOREBOARD_FRAME_COUNT_MAX * SCOREBOARD_NUMBER_OF_FRAMES)) { scoreFrameCnt = 0; }
+
+
+   // Clear the board space ..
+   
+  arduboy.fillRect(SCOREBOARD_OUTER_RECT_X, SCOREBOARD_OUTER_RECT_Y, SCOREBOARD_OUTER_RECT_WIDTH, SCOREBOARD_OUTER_RECT_HEIGHT, BLACK);
+  arduboy.drawRect(SCOREBOARD_INNER_RECT_X, SCOREBOARD_INNER_RECT_Y, SCOREBOARD_INNER_RECT_WIDTH, SCOREBOARD_INNER_RECT_HEIGHT, WHITE);
+
+  switch (scoreFrameCnt / SCOREBOARD_FRAME_COUNT_MAX) {
+
+    case 0:
+    
+      Sprites::drawOverwrite(SCOREBOARD_ICON_X, SCOREBOARD_ICON_Y, jewel, frame);
+      Sprites::drawOverwrite(SCOREBOARD_DIGIT_1_X, SCOREBOARD_DIGIT_Y, digits[player_score / 100], frame);
+      player_score = player_score - (player_score / 100) * 100;
+      Sprites::drawOverwrite(SCOREBOARD_DIGIT_2_X, SCOREBOARD_DIGIT_Y, digits[player_score / 10], frame);
+      Sprites::drawOverwrite(SCOREBOARD_DIGIT_3_X, SCOREBOARD_DIGIT_Y, digits[player_score % 10], frame);
+     
+      break;
+
+    case 1:
+    
+      Sprites::drawOverwrite(SCOREBOARD_ICON_X, SCOREBOARD_ICON_Y, fuel_gauge, frame);
+      if ((player.getFuel() <= 4 && scoreFuelFlash >= (SCOREBOARD_FUEL_FLASH_MAX / 2)) || player.getFuel() > 4) {
+        for (idx = 0; idx<player.getFuel().GetInteger(); idx+=2) {
+          arduboy.drawLine(SCOREBOARD_FUEL_BAR_LEFT + idx, SCOREBOARD_FUEL_BAR_TOP, SCOREBOARD_FUEL_BAR_LEFT + idx, SCOREBOARD_FUEL_BAR_BOTTOM);
+        }
+      }
+
+      break;
+    
+  }
+
+}
 
 
 /* -----------------------------------------------------------------------------------------------------------------------------
@@ -507,60 +562,50 @@ void launchCar(uint8_t carNumber, uint8_t launchDelay) {
  */
  void launchObstacle(uint8_t obstacleNumber) {
 
-  idx = random(0, 2);
+  ObstacleType type = (ObstacleType)random((uint8_t)ObstacleType::First, (uint8_t)ObstacleType::Count);
   
-  switch (idx) {
+  switch (type) {
     
-    case 0:  // rough spot
+    case ObstacleType::RoughRoad:
+      obstacles[obstacleNumber].setObstacleType(ObstacleType::RoughRoad);
       obstacles[obstacleNumber].setEnabled(true);
       obstacles[obstacleNumber].setX(WIDTH);
       obstacles[obstacleNumber].setY(random(road.y + ROAD_OFFSET_UPPER + 4 , road.y + road.height - 6 - obstacles[obstacleNumber].getHeight()));
-      obstacles[obstacleNumber].setBitmap(obstacle_images[0]); 
-      obstacles[obstacleNumber].setMask(obstacle_masks[0]); 
+      obstacles[obstacleNumber].setBitmap(obstacle_images[(uint8_t)ObstacleType::RoughRoad]); 
+      obstacles[obstacleNumber].setMask(obstacle_masks[(uint8_t)ObstacleType::RoughRoad]); 
       break;
     
-    case 1:  // crossing
+    case ObstacleType::Crossing:  
+      obstacles[obstacleNumber].setObstacleType(ObstacleType::Crossing);
       obstacles[obstacleNumber].setEnabled(true);
       obstacles[obstacleNumber].setX(WIDTH);
       obstacles[obstacleNumber].setY(road.y + ROAD_OFFSET_UPPER + 3);
-      obstacles[obstacleNumber].setBitmap(obstacle_images[1]); 
-      obstacles[obstacleNumber].setMask(obstacle_masks[1]); 
+      obstacles[obstacleNumber].setBitmap(obstacle_images[(uint8_t)ObstacleType::Crossing]); 
+      obstacles[obstacleNumber].setMask(obstacle_masks[(uint8_t)ObstacleType::Crossing]); 
+      break;
+    
+    case ObstacleType::Fuel: 
+      obstacles[obstacleNumber].setObstacleType(ObstacleType::Fuel);
+      obstacles[obstacleNumber].setEnabled(true);
+      obstacles[obstacleNumber].setX(WIDTH);
+      obstacles[obstacleNumber].setY(road.y + ROAD_OFFSET_UPPER + 3);
+      obstacles[obstacleNumber].setBitmap(obstacle_images[(uint8_t)ObstacleType::Fuel]); 
+      obstacles[obstacleNumber].setMask(obstacle_masks[(uint8_t)ObstacleType::Fuel]); 
+      break;
+    
+    case ObstacleType::Jewel: 
+      obstacles[obstacleNumber].setObstacleType(ObstacleType::Jewel);
+      obstacles[obstacleNumber].setEnabled(true);
+      obstacles[obstacleNumber].setX(WIDTH);
+      obstacles[obstacleNumber].setY(road.y + ROAD_OFFSET_UPPER + 3);
+      obstacles[obstacleNumber].setBitmap(obstacle_images[(uint8_t)ObstacleType::Jewel]); 
+      obstacles[obstacleNumber].setMask(obstacle_masks[(uint8_t)ObstacleType::Jewel]); 
       break;
 
   }
   
- }
+}
 
-
-/* -----------------------------------------------------------------------------------------------------------------------------
- *  Launch a new roadside image ..
- * -----------------------------------------------------------------------------------------------------------------------------
- */
- void launchRoadside(uint8_t roadsideNumber, bool top) {
-
-  idx = random(0, 2);
-
-  switch (idx) {
-    
-    case 0:  // rough spot
-      roadsides[roadsideNumber].setEnabled(true);
-      roadsides[roadsideNumber].setX(WIDTH);
-      roadsides[roadsideNumber].setY(top ? 0 : 48);
-      roadsides[roadsideNumber].setBitmap(roadside_images[0]); 
-      roadsides[roadsideNumber].setMask(roadside_masks[0]); 
-      break;
-    
-    case 1:  // rough spot
-      roadsides[roadsideNumber].setEnabled(true);
-      roadsides[roadsideNumber].setX(WIDTH);
-      roadsides[roadsideNumber].setY(top ? 2 : 50);
-      roadsides[roadsideNumber].setBitmap(roadside_images[1]); 
-      roadsides[roadsideNumber].setMask(roadside_masks[1]); 
-      break;
-    
-  }
-  
- }
 
  
 /* -----------------------------------------------------------------------------------------------------------------------------
@@ -655,21 +700,10 @@ void drawRoad() {
 
 }
 
-void debugRoad() {
 
-  for (int x = 0; x < 17; ++x) {
-    Serial.print('{');
-    Serial.print(roadElements[x].upperLimit);
-    Serial.print(',');
-    Serial.print(roadElements[x].lowerLimit);
-    Serial.print(',');
-    Serial.print((int)roadElements[x].roadType);
-    Serial.print('}');
-  }
-  Serial.println('');
-
-}
-
+/* -----------------------------------------------------------------------------------------------------------------------------
+ *  If the player was to move up, would they crash into another car?
+ */
 bool collideWithCarAbove() {
 
   player.setNewX(player.getX());
@@ -679,8 +713,7 @@ bool collideWithCarAbove() {
       
     if (cars[idx].getEnabled()) { 
 
-      if (collide(player.getNewRect(), cars[idx].getRect()) & (uint8_t)Direction::Up != 0) {
-//      Serial.println("collideWithCarAbove");
+      if (collide(player.getNewRect(), cars[idx].getRect(), Direction::Up)) {
         return true;
       }
 
@@ -692,6 +725,9 @@ bool collideWithCarAbove() {
   
 }
 
+/* -----------------------------------------------------------------------------------------------------------------------------
+ *  If the player was to move down, would they crash into another car?
+ */
 bool collideWithCarBelow() {
 
   player.setNewX(player.getX());
@@ -701,8 +737,7 @@ bool collideWithCarBelow() {
 
     if (cars[idx].getEnabled()) { 
 
-      if (collide(player.getNewRect(), cars[idx].getRect()) & (uint8_t)Direction::Down != 0) {
-//      Serial.println("collideWithCarBelow");
+      if (collide(player.getNewRect(), cars[idx].getRect(), Direction::Down)) {
         return true;
       }
 
@@ -714,6 +749,10 @@ bool collideWithCarBelow() {
   
 }
 
+
+/* -----------------------------------------------------------------------------------------------------------------------------
+ *  If the player was to move forward, would they crash into another car?
+ */
 bool collideWithCarInFront() {
 
   player.setNewX(player.getX());
@@ -723,8 +762,7 @@ bool collideWithCarInFront() {
 
     if (cars[idx].getEnabled()) { 
 
-      if (collide(player.getNewRect(), cars[idx].getRect()) & (uint8_t)Direction::Right != 0) {
-//      Serial.println("collideWithCarInFront");
+      if (collide(player.getNewRect(), cars[idx].getRect(), Direction::Right)) {
         return true;
       }
 
@@ -736,38 +774,37 @@ bool collideWithCarInFront() {
   
 }
 
-uint8_t collide(Rect rect1, Rect rect2) {
+
+/* -----------------------------------------------------------------------------------------------------------------------------
+ *  Determine if the Rect1 has collided with Rect2 in the nominated direction.
+ *       
+ *  Note that the direction is relative to Rect1.       
+ */
+bool collide(Rect rect1, Rect rect2, Direction testDirection) {
+  
+  return (collide(rect1, rect2) & testDirection);
+  
+}
+
+
+/* -----------------------------------------------------------------------------------------------------------------------------
+ *  Determine on which sides two Rects may have collided.
+ *       
+ *  Note that the returned directions are relative to Rect1.       
+ */
+Direction collide(Rect rect1, Rect rect2) {
 
   uint8_t direction = (uint8_t)Direction::None;
-
-//  Serial.print("rect1.x=");
-//  Serial.print(rect1.x);
-//  Serial.print(", rect1.width=");
-//  Serial.print(rect1.width);
-//  Serial.print(", rect1.y=");
-//  Serial.print(rect1.y);
-//  Serial.print(", rect1.height=");
-//  Serial.print(rect1.height);
-//  Serial.print("    ");
-//  Serial.print("rect2.x=");
-//  Serial.print(rect2.x);
-//  Serial.print(", rect2.width=");
-//  Serial.print(rect2.width);
-//  Serial.print(", rect2.y=");
-//  Serial.print(rect2.y);
-//  Serial.print(", rect2.height=");
-//  Serial.print(rect2.height);
-//  Serial.println("");
  
   if (!(rect2.x                >= rect1.x + rect1.width  ||
         rect2.x + rect2.width  <= rect1.x                ||
         rect2.y                >= rect1.y + rect1.height ||
         rect2.y + rect2.height <= rect1.y)) {
 
-    if (rect1.x + rect1.width - rect2.x > 0)    direction = direction | (uint8_t)Direction::Right;     // Rect 2 is in front of Rect 1?
-    if (rect2.x + rect2.width - rect1.x > 0)    direction = direction | (uint8_t)Direction::Left;      // Rect 2 is behind Rect 1?
-    if (rect2.y + rect2.height - rect1.y > 0);  direction = direction | (uint8_t)Direction::Up;        // Rect 2 is above Rect 1?
-    if (rect1.y + rect1.height - rect2.y > 0);  direction = direction | (uint8_t)Direction::Down;      // Rect 2 is below Rect 1?
+    if (rect1.x + rect1.width - rect2.x > 0)    direction = direction | Direction::Right;     // Rect 2 is to the right of Rect 1?
+    if (rect2.x + rect2.width - rect1.x > 0)    direction = direction | Direction::Left;      // Rect 2 is to the left of Rect 1?
+    if (rect2.y + rect2.height - rect1.y > 0);  direction = direction | Direction::Up;        // Rect 2 is above Rect 1?
+    if (rect1.y + rect1.height - rect2.y > 0);  direction = direction | Direction::Down;      // Rect 2 is below Rect 1?
 
   }
     
