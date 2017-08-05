@@ -19,7 +19,7 @@ ArduboyTones sound(arduboy.audio.off);
 
 #define NUMBER_OF_CAR_IMAGES          8
 #define NUMBER_OF_CARS                3
-#define NUMBER_OF_OBSTACLES           4
+#define NUMBER_OF_OBSTACLES           3
 #define NUMBER_OF_ROADSIDES           6
 #define ROAD_IMAGES_HEIGHT            24
 
@@ -85,7 +85,7 @@ bool sortByNewX(Car x, Car y) {
 void setup() {
   
   arduboy.begin();
-  arduboy.setFrameRate(60);
+  arduboy.setFrameRate(120);
   arduboy.initRandomSeed();
 
   for (idx = 0; idx < 17; ++idx) {
@@ -589,7 +589,7 @@ void launchCar(uint8_t carNumber, uint8_t launchDelay) {
       obstacles[obstacleNumber].setObstacleType(ObstacleType::Fuel);
       obstacles[obstacleNumber].setEnabled(true);
       obstacles[obstacleNumber].setX(WIDTH);
-      obstacles[obstacleNumber].setY(road.y + ROAD_OFFSET_UPPER + 3);
+      obstacles[obstacleNumber].setY(random(road.y + ROAD_OFFSET_UPPER + 4 , road.y + road.height - 6 - obstacles[obstacleNumber].getHeight()));
       obstacles[obstacleNumber].setBitmap(obstacle_images[(uint8_t)ObstacleType::Fuel]); 
       obstacles[obstacleNumber].setMask(obstacle_masks[(uint8_t)ObstacleType::Fuel]); 
       break;
@@ -598,7 +598,7 @@ void launchCar(uint8_t carNumber, uint8_t launchDelay) {
       obstacles[obstacleNumber].setObstacleType(ObstacleType::Jewel);
       obstacles[obstacleNumber].setEnabled(true);
       obstacles[obstacleNumber].setX(WIDTH);
-      obstacles[obstacleNumber].setY(road.y + ROAD_OFFSET_UPPER + 3);
+      obstacles[obstacleNumber].setY(random(road.y + ROAD_OFFSET_UPPER + 4 , road.y + road.height - 6 - obstacles[obstacleNumber].getHeight()));
       obstacles[obstacleNumber].setBitmap(obstacle_images[(uint8_t)ObstacleType::Jewel]); 
       obstacles[obstacleNumber].setMask(obstacle_masks[(uint8_t)ObstacleType::Jewel]); 
       break;
@@ -802,13 +802,13 @@ Direction collide(Rect rect1, Rect rect2) {
         rect2.y                >= rect1.y + rect1.height ||
         rect2.y + rect2.height <= rect1.y)) {
 
-    if (rect1.x + rect1.width - rect2.x > 0)    direction = direction | Direction::Right;     // Rect 2 is to the right of Rect 1?
-    if (rect2.x + rect2.width - rect1.x > 0)    direction = direction | Direction::Left;      // Rect 2 is to the left of Rect 1?
-    if (rect2.y + rect2.height - rect1.y > 0);  direction = direction | Direction::Up;        // Rect 2 is above Rect 1?
-    if (rect1.y + rect1.height - rect2.y > 0);  direction = direction | Direction::Down;      // Rect 2 is below Rect 1?
+    if ((rect1.x <= rect2.x) && (rect1.x + rect1.width >= rect2.x))    direction = direction | Direction::Right;     // Rect 2 is to the right of Rect 1?
+    if ((rect2.x <= rect1.x) && (rect2.x + rect2.width >= rect1.x))    direction = direction | Direction::Left;      // Rect 2 is to the left of Rect 1?
+    if ((rect2.y <= rect1.y) && (rect2.y + rect2.height >= rect1.y))   direction = direction | Direction::Up;        // Rect 2 is above Rect 1?
+    if ((rect1.y <= rect2.y) && (rect1.y + rect1.height >= rect2.y))   direction = direction | Direction::Down;      // Rect 2 is below Rect 1?
 
   }
-    
+
   return direction;
 
 }
