@@ -9,7 +9,7 @@
 #include "Sounds.h"
 
 Arduboy2 arduboy; 
-ArduboyTones sound(arduboy.audio.off);
+ArduboyTones sound(arduboy.audio.on);
 
 #define CAR_LAUNCH_DELAY_MAX          120
 #define CAR_LAUNCH_DELAY_MIN          60
@@ -101,7 +101,7 @@ void setup() {
   Sprites::drawOverwrite(0, 0, Hannibal, frame);
   arduboy.display();
 
-  //sound.tones(score);
+  sound.tones(score2);
   while (!arduboy.pressed(A_BUTTON)) {
     delay(100);
   }
@@ -802,10 +802,10 @@ Direction collide(Rect rect1, Rect rect2) {
         rect2.y                >= rect1.y + rect1.height ||
         rect2.y + rect2.height <= rect1.y)) {
 
-    if ((rect1.x <= rect2.x) && (rect1.x + rect1.width >= rect2.x))    direction = direction | Direction::Right;     // Rect 2 is to the right of Rect 1?
-    if ((rect2.x <= rect1.x) && (rect2.x + rect2.width >= rect1.x))    direction = direction | Direction::Left;      // Rect 2 is to the left of Rect 1?
-    if ((rect2.y <= rect1.y) && (rect2.y + rect2.height >= rect1.y))   direction = direction | Direction::Up;        // Rect 2 is above Rect 1?
-    if ((rect1.y <= rect2.y) && (rect1.y + rect1.height >= rect2.y))   direction = direction | Direction::Down;      // Rect 2 is below Rect 1?
+    if ((rect1.x < rect2.x) && (rect1.x + rect1.width > rect2.x))    direction = direction | Direction::Right;     // Rect 2 is to the right of Rect 1?
+    if ((rect2.x < rect1.x) && (rect2.x + rect2.width > rect1.x))    direction = direction | Direction::Left;      // Rect 2 is to the left of Rect 1?
+    if ((rect2.y < rect1.y) && (rect2.y + rect2.height > rect1.y))   direction = direction | Direction::Up;        // Rect 2 is above Rect 1?
+    if ((rect1.y < rect2.y) && (rect1.y + rect1.height > rect2.y))   direction = direction | Direction::Down;      // Rect 2 is below Rect 1?
 
   }
 
