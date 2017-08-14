@@ -48,5 +48,13 @@ class Car : public Base {
     SQ7x8 _speedY;  
 
 
+    // Steering variables ..
+    
+    uint8_t randomCount = 0;
+    uint8_t randomNumber = 0;
+    int16_t _roadUpper;
+    int16_t _roadLower;       
+    bool _goingUp;
+
 };
 #endif

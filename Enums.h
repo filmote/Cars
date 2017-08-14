@@ -28,9 +28,9 @@ enum class ObstacleType : uint8_t {
   Crossing,  
   Fuel,
   Jewel,
+  Count,
   Ramp,
   Crevice,
-  Count,
   First = RoughRoad,
   Last = Crossing,
 };

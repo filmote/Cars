@@ -157,7 +157,7 @@ void loop() {
 
 
 
-  // Has the player hit a obstacle?
+  // Has the player hit an obstacle?
 
   for (idx = 0; idx < NUMBER_OF_OBSTACLES; ++idx) {
     
@@ -201,8 +201,7 @@ void loop() {
     
     if (carLaunchCountdown == 0) {
   
-//      for (uint8_t carNumber = 0; carNumber < NUMBER_OF_CARS; ++carNumber) {
-      for (uint8_t carNumber = 0; carNumber < 1; ++carNumber) {
+      for (uint8_t carNumber = 0; carNumber < NUMBER_OF_CARS; ++carNumber) {
   
         if (!cars[carNumber].getEnabled()) { 
           launchCar(carNumber, carLaunchDelay); 
@@ -245,7 +244,7 @@ void loop() {
   else {
 
     if (obstacles[rampObstacleNo].getX().GetInteger() == WIDTH - 16) {
-//      launchCrevice();
+//       launchCrevice();
     }
     
   }
@@ -306,7 +305,7 @@ void loop() {
 
   // Are any cars touching other cars ?  Sort the cars into order so that the left most is processed first ..
 
-//  sortArray(cars, 3, sortByNewX);
+  sortArray(cars, 3, sortByNewX);
 
   bool checkCars = true;
 
@@ -599,7 +598,16 @@ void launchCar(uint8_t carNumber, uint8_t launchDelay) {
  */
  void launchObstacle(uint8_t obstacleNumber) {
 
-  ObstacleType type = (ObstacleType)random((uint8_t)ObstacleType::First, (uint8_t)ObstacleType::Count);
+  ObstacleType type;
+
+Serial.println(static_cast<float>(player.getFuel()));
+
+  if (player.getFuel() <= 4) {
+    type = ObstacleType::Fuel;
+  }
+  else {
+    type = (ObstacleType)random((uint8_t)ObstacleType::First, (uint8_t)ObstacleType::Count);
+  }
   
   switch (type) {
     

@@ -2,13 +2,6 @@
 #include "Arduboy2.h"
 #include "Sprites.h"
 #include "Enums.h"
-
-uint8_t randomCount = 0;
-uint8_t randomNumber = 0;
-      
-int16_t _roadUpper;
-int16_t _roadLower;       
-bool _goingUp;
     
 Car::Car(uint8_t name, SQ7x8 x, SQ7x8 y, SQ7x8 speedX, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType) :
      Base(x, y, bitmapRef, maskRef) {
@@ -39,7 +32,16 @@ void Car::calcNewPosition(uint8_t pixels, int16_t roadUpper, int16_t roadLower) 
     switch (_steeringType) {
 
       case (SteeringType::FollowRoad):
-
+//Serial.print("name: ");
+//Serial.print(this->getName());
+//Serial.print("_roadUpper: ");
+//Serial.print(_roadUpper);
+//Serial.print(", roadUpper: ");
+//Serial.print(roadUpper);
+//Serial.print(", _roadLower: ");
+//Serial.print(_roadLower);
+//Serial.print(", roadLower: ");
+//Serial.println(roadLower);
         if (_roadUpper > 0 && _roadLower > 0) {
   
           if (_roadUpper > roadUpper) {      // Road is going up.
