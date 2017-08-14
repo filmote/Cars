@@ -34,9 +34,9 @@ namespace Details
 		constexpr FixedPointBase(const IntegerLiteral & value) : value(static_cast<InternalType>(value << Fraction)) {}
 		constexpr FixedPointBase(const IntegerLiteralU & value) : value(static_cast<InternalType>(value << Fraction)) {}
 		constexpr FixedPointBase(const IntegerLiteralL & value) : value(static_cast<InternalType>(value << Fraction)) {}
-		constexpr FixedPointBase(const IntegerLiteralLU & value) : value(static_cast<InternalType>(value << Fraction)) {}
+		constexpr FixedPointBase(const IntegerLiteralUL & value) : value(static_cast<InternalType>(value << Fraction)) {}
 		constexpr FixedPointBase(const IntegerLiteralLL & value) : value(static_cast<InternalType>(value << Fraction)) {}
-		constexpr FixedPointBase(const IntegerLiteralLLU & value) : value(static_cast<InternalType>(value << Fraction)) {}
+		constexpr FixedPointBase(const IntegerLiteralULL & value) : value(static_cast<InternalType>(value << Fraction)) {}
 
 		constexpr FixedPointBase(const DecimalLiteral & value) : value(static_cast<InternalType>(value * Scale)) {}
 		constexpr FixedPointBase(const DecimalLiteralF & value) : value(static_cast<InternalType>(value * Scale)) {}

@@ -34,9 +34,9 @@ namespace Details
 		constexpr UFixedPointBase(const IntegerLiteral & value) : value(static_cast<InternalType>(value << Fraction)) {}
 		constexpr UFixedPointBase(const IntegerLiteralU & value) : value(static_cast<InternalType>(value << Fraction)) {}
 		constexpr UFixedPointBase(const IntegerLiteralL & value) : value(static_cast<InternalType>(value << Fraction)) {}
-		constexpr UFixedPointBase(const IntegerLiteralLU & value) : value(static_cast<InternalType>(value << Fraction)) {}
+		constexpr UFixedPointBase(const IntegerLiteralUL & value) : value(static_cast<InternalType>(value << Fraction)) {}
 		constexpr UFixedPointBase(const IntegerLiteralLL & value) : value(static_cast<InternalType>(value << Fraction)) {}
-		constexpr UFixedPointBase(const IntegerLiteralLLU & value) : value(static_cast<InternalType>(value << Fraction)) {}
+		constexpr UFixedPointBase(const IntegerLiteralULL & value) : value(static_cast<InternalType>(value << Fraction)) {}
 
 		constexpr UFixedPointBase(const DecimalLiteral & value) : value(static_cast<InternalType>(value * Scale)) {}
 		constexpr UFixedPointBase(const DecimalLiteralF & value) : value(static_cast<InternalType>(value * Scale)) {}

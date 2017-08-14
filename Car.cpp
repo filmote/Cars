@@ -59,7 +59,7 @@ void Car::calcNewPosition(uint8_t pixels, int16_t roadUpper, int16_t roadLower) 
 
         if (_goingUp) {
   
-          if (y.GetInteger() > roadUpper) {
+          if (y.getInteger() > roadUpper) {
             y = y - _speedY;        
           }
           else {
@@ -68,7 +68,7 @@ void Car::calcNewPosition(uint8_t pixels, int16_t roadUpper, int16_t roadLower) 
           
         }
         else {
-          if (y.GetInteger() + (this->getHeight()) < roadLower) {
+          if (y.getInteger() + (this->getHeight()) < roadLower) {
             y = y + _speedY;        
           }
           else {
@@ -186,10 +186,10 @@ void Car::setSpeedY(const SQ7x8 value) {
 
 void Car::renderImage(int16_t frame) {
 
-  if (this->getEnabled() && this->getX().GetInteger() + this->getWidth() >= 0 && this->getX().GetInteger() < WIDTH) {
-    Sprites::drawExternalMask(this->getX().GetInteger(), this->getY().GetInteger(), _bitmap, _mask, frame, frame);
+  if (this->getEnabled() && this->getX().getInteger() + this->getWidth() >= 0 && this->getX().getInteger() < WIDTH) {
+    Sprites::drawExternalMask(this->getX().getInteger(), this->getY().getInteger(), _bitmap, _mask, frame, frame);
   }
-  else if (this->getX().GetInteger() + this->getWidth() < 0) {
+  else if (this->getX().getInteger() + this->getWidth() < 0) {
     this->setEnabled(false);
   }
 
@@ -197,8 +197,8 @@ void Car::renderImage(int16_t frame) {
 
 void Car::clearImage(int16_t frame) {
 
-  if (this->getEnabled() && this->getX().GetInteger() + this->getWidth() >= 0 && this->getX().GetInteger() < WIDTH) {
-    Sprites::drawErase(this->getX().GetInteger(), this->getY().GetInteger(), _bitmap, frame);
+  if (this->getEnabled() && this->getX().getInteger() + this->getWidth() >= 0 && this->getX().getInteger() < WIDTH) {
+    Sprites::drawErase(this->getX().getInteger(), this->getY().getInteger(), _bitmap, frame);
   }
   
 }

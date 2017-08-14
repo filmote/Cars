@@ -18,7 +18,8 @@ class Obstacle : public Base {
     
     void setEnabled(const bool value);
     void setObstacleType(const ObstacleType value);
-    
+    void setX(const SQ7x8 value);
+         
     void move(uint8_t pixels);
     void renderImage(int16_t frame);  
     

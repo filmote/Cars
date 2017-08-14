@@ -10,6 +10,15 @@ Obstacle::Obstacle(SQ7x8 x, SQ7x8 y, const uint8_t *bitmapRef, const uint8_t *ma
   
 }
 
+void Obstacle::setX(const SQ7x8 value) {
+Serial.print("setX() ");
+Serial.print(static_cast<float>(value));
+Serial.print(" ");
+Serial.println(value.getInteger());
+  Base::setX(value);
+
+}
+
 void Obstacle::move(uint8_t pixels) {
 
   this->setX(this->getX() - pixels);
@@ -42,10 +51,10 @@ void Obstacle::setObstacleType(const ObstacleType value) {
 
 void Obstacle::renderImage(int16_t frame) {
 
-  if (this->getEnabled() && this->getX().GetInteger() + this->getWidth() >= 0 && this->getX().GetInteger() < WIDTH) {
-    Sprites::drawExternalMask(this->getX().GetInteger(), this->getY().GetInteger(), _bitmap, _mask, frame, frame);
+  if (this->getEnabled() && this->getX().getInteger() + this->getWidth() >= 0 && this->getX().getInteger() < WIDTH) {
+    Sprites::drawExternalMask(this->getX().getInteger(), this->getY().getInteger(), _bitmap, _mask, frame, frame);
   }
-  else if (this->getX().GetInteger() + this->getWidth() < 0) {
+  else if (this->getX().getInteger() + this->getWidth() < 0) {
     this->setEnabled(false);
   }
 

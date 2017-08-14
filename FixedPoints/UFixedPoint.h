@@ -40,18 +40,18 @@ public:
 	constexpr UFixedPoint(const IntegerType & integer);
 	constexpr UFixedPoint(const IntegerType & integer, const FractionType & fraction);
 
-	InternalType GetInternal(void) const;
-	IntegerType GetInteger(void) const;
-	FractionType GetFraction(void) const;
+	constexpr InternalType getInternal(void) const;
+	constexpr IntegerType getInteger(void) const;
+	constexpr FractionType getFraction(void) const;
 
 	constexpr explicit operator IntegerType(void) const;
 	constexpr explicit operator float(void) const;
 	constexpr explicit operator double(void) const;
 
 	template< unsigned IntegerOut, unsigned FractionOut >
-	explicit operator UFixedPoint<IntegerOut, FractionOut>(void) const;
+	constexpr explicit operator UFixedPoint<IntegerOut, FractionOut>(void) const;
 
-	constexpr static UFixedPoint FromInternal(const InternalType & value);
+	constexpr static UFixedPoint fromInternal(const InternalType & value);
 
 	UFixedPoint & operator ++(void);
 	UFixedPoint & operator --(void);
@@ -62,94 +62,37 @@ public:
 };
 
 template< unsigned Integer, unsigned Fraction >
-bool operator ==(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
+constexpr bool operator ==(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
 
 template< unsigned Integer, unsigned Fraction >
-bool operator ==(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right);
+constexpr bool operator !=(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
 
 template< unsigned Integer, unsigned Fraction >
-bool operator ==(const typename UFixedPoint<Integer, Fraction>::IntegerType & left, const UFixedPoint<Integer, Fraction> & right);
+constexpr bool operator <(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
 
 template< unsigned Integer, unsigned Fraction >
-bool operator !=(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
+constexpr bool operator >(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
 
 template< unsigned Integer, unsigned Fraction >
-bool operator !=(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right);
+constexpr bool operator <=(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
 
 template< unsigned Integer, unsigned Fraction >
-bool operator !=(const typename UFixedPoint<Integer, Fraction>::IntegerType & left, const UFixedPoint<Integer, Fraction> & right);
+constexpr bool operator >=(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
 
 template< unsigned Integer, unsigned Fraction >
-bool operator <(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
+constexpr UFixedPoint<Integer, Fraction> operator +(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
 
 template< unsigned Integer, unsigned Fraction >
-bool operator <(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right);
+constexpr UFixedPoint<Integer, Fraction> operator -(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
 
 template< unsigned Integer, unsigned Fraction >
-bool operator <(const typename UFixedPoint<Integer, Fraction>::IntegerType & left, const UFixedPoint<Integer, Fraction> & right);
+constexpr UFixedPoint<Integer, Fraction> operator *(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
 
 template< unsigned Integer, unsigned Fraction >
-bool operator >(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
+constexpr UFixedPoint<Integer, Fraction> operator /(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
 
 template< unsigned Integer, unsigned Fraction >
-bool operator >(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right);
-
-template< unsigned Integer, unsigned Fraction >
-bool operator >(const typename UFixedPoint<Integer, Fraction>::IntegerType & left, const UFixedPoint<Integer, Fraction> & right);
-
-template< unsigned Integer, unsigned Fraction >
-bool operator <=(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
-
-template< unsigned Integer, unsigned Fraction >
-bool operator <=(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right);
-
-template< unsigned Integer, unsigned Fraction >
-bool operator <=(const typename UFixedPoint<Integer, Fraction>::IntegerType & left, const UFixedPoint<Integer, Fraction> & right);
-
-template< unsigned Integer, unsigned Fraction >
-bool operator >=(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
-
-template< unsigned Integer, unsigned Fraction >
-bool operator >=(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right);
-
-template< unsigned Integer, unsigned Fraction >
-bool operator >=(const typename UFixedPoint<Integer, Fraction>::IntegerType & left, const UFixedPoint<Integer, Fraction> & right);
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator +(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator +(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right);
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator +(const typename UFixedPoint<Integer, Fraction>::IntegerType & left, const UFixedPoint<Integer, Fraction> & right);
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator -(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator -(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right);
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator -(const typename UFixedPoint<Integer, Fraction>::IntegerType & left, const UFixedPoint<Integer, Fraction> & right);
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator *(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator *(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right);
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator *(const typename UFixedPoint<Integer, Fraction>::IntegerType & left, const UFixedPoint<Integer, Fraction> & right);
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator /(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator /(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right);
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer * 2, Fraction * 2> Multiply(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
+constexpr UFixedPoint<Integer * 2, Fraction * 2> Multiply(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right);
 END_FIXED_POINTS
 
 //
@@ -176,19 +119,19 @@ constexpr UFixedPoint<Integer, Fraction>::UFixedPoint(const IntegerType & intege
 }
 
 template< unsigned Integer, unsigned Fraction >
-typename UFixedPoint<Integer, Fraction>::InternalType UFixedPoint<Integer, Fraction>::GetInternal(void) const
+constexpr typename UFixedPoint<Integer, Fraction>::InternalType UFixedPoint<Integer, Fraction>::getInternal(void) const
 {
 	return this->value;
 }
 
 template< unsigned Integer, unsigned Fraction >
-typename UFixedPoint<Integer, Fraction>::IntegerType UFixedPoint<Integer, Fraction>::GetInteger(void) const
+constexpr typename UFixedPoint<Integer, Fraction>::IntegerType UFixedPoint<Integer, Fraction>::getInteger(void) const
 {
 	return static_cast<IntegerType>(this->value >> FractionSize);
 }
 
 template< unsigned Integer, unsigned Fraction >
-typename UFixedPoint<Integer, Fraction>::FractionType UFixedPoint<Integer, Fraction>::GetFraction(void) const
+constexpr typename UFixedPoint<Integer, Fraction>::FractionType UFixedPoint<Integer, Fraction>::getFraction(void) const
 {
 	return static_cast<FractionType>(this->value & Details::IdentityMask<FractionSize>::Value);
 }
@@ -196,7 +139,7 @@ typename UFixedPoint<Integer, Fraction>::FractionType UFixedPoint<Integer, Fract
 template< unsigned Integer, unsigned Fraction >
 constexpr UFixedPoint<Integer, Fraction>::operator IntegerType(void) const
 {
-	return this->GetInteger();
+	return this->getInteger();
 }
 
 template< unsigned Integer, unsigned Fraction >
@@ -213,29 +156,21 @@ constexpr UFixedPoint<Integer, Fraction>::operator double(void) const
 
 template< unsigned Integer, unsigned Fraction >
 template< unsigned IntegerOut, unsigned FractionOut >
-UFixedPoint<Integer, Fraction>::operator UFixedPoint<IntegerOut, FractionOut>(void) const
+constexpr UFixedPoint<Integer, Fraction>::operator UFixedPoint<IntegerOut, FractionOut>(void) const
 {
-	using Output = UFixedPoint<IntegerOut, FractionOut>;
-	using InternalType = typename Output::InternalType;
+	using OutputType = UFixedPoint<IntegerOut, FractionOut>;
+	using InternalType = typename OutputType::InternalType;
 
-	if (FractionOut > Fraction)
-	{
-		constexpr const auto Difference = (FractionOut > Fraction) ? FractionOut - Fraction : 0;
-		return Output::FromInternal(static_cast<InternalType>(this->value << Difference));
-	}
-	else if (FractionOut < Fraction)
-	{
-		constexpr const auto Difference = (FractionOut < Fraction) ? Fraction - FractionOut : 0;
-		return Output::FromInternal(static_cast<InternalType>(this->value >> Difference));
-	}
-	else
-	{
-		return Output::FromInternal(this->value);
-	}
+	return
+	(FractionOut > Fraction) ?
+		OutputType::fromInternal(static_cast<InternalType>(this->value << ((FractionOut > Fraction) ? FractionOut - Fraction : 0))) :
+	(FractionOut < Fraction) ?
+		OutputType::fromInternal(static_cast<InternalType>(this->value >> ((FractionOut < Fraction) ? Fraction - FractionOut : 0))) :
+		OutputType::fromInternal(this->value);
 }
 
 template< unsigned Integer, unsigned Fraction >
-constexpr UFixedPoint<Integer, Fraction> UFixedPoint<Integer, Fraction>::FromInternal(const typename UFixedPoint<Integer, Fraction>::InternalType & value)
+constexpr UFixedPoint<Integer, Fraction> UFixedPoint<Integer, Fraction>::fromInternal(const typename UFixedPoint<Integer, Fraction>::InternalType & value)
 {
 	return UFixedPoint<Integer, Fraction>(RawType(value));
 }
@@ -287,191 +222,126 @@ UFixedPoint<Integer, Fraction> & UFixedPoint<Integer, Fraction>::operator /=(con
 
 
 template< unsigned Integer, unsigned Fraction >
-bool operator ==(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
+constexpr bool operator ==(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
 {
-	return (left.GetInternal() == right.GetInternal());
+	return (left.getInternal() == right.getInternal());
 }
 
 template< unsigned Integer, unsigned Fraction >
-bool operator ==(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right)
+constexpr bool operator !=(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
 {
-	return (left == UFixedPoint<Integer, Fraction>(right));
+	return (left.getInternal() != right.getInternal());
 }
 
 template< unsigned Integer, unsigned Fraction >
-bool operator ==(const typename UFixedPoint<Integer, Fraction>::IntegerType & left, const UFixedPoint<Integer, Fraction> & right)
+constexpr bool operator <(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
 {
-	return (UFixedPoint<Integer, Fraction>(left) == right);
+	return (left.getInternal() < right.getInternal());
 }
 
 template< unsigned Integer, unsigned Fraction >
-bool operator !=(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
+constexpr bool operator >(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
 {
-	return (left.GetInternal() != right.GetInternal());
+	return (left.getInternal() > right.getInternal());
 }
 
 template< unsigned Integer, unsigned Fraction >
-bool operator !=(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right)
+constexpr bool operator <=(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
 {
-	return (left != UFixedPoint<Integer, Fraction>(right));
+	return (left.getInternal() <= right.getInternal());
 }
 
 template< unsigned Integer, unsigned Fraction >
-bool operator !=(const typename UFixedPoint<Integer, Fraction>::IntegerType & left, const UFixedPoint<Integer, Fraction> & right)
+constexpr bool operator >=(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
 {
-	return (UFixedPoint<Integer, Fraction>(left) != right);
+	return (left.getInternal() >= right.getInternal());
 }
 
 template< unsigned Integer, unsigned Fraction >
-bool operator <(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
-{
-	return (left.GetInternal() < right.GetInternal());
-}
-
-template< unsigned Integer, unsigned Fraction >
-bool operator <(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right)
-{
-	return (left < UFixedPoint<Integer, Fraction>(right));
-}
-
-template< unsigned Integer, unsigned Fraction >
-bool operator <(const typename UFixedPoint<Integer, Fraction>::IntegerType & left, const UFixedPoint<Integer, Fraction> & right)
-{
-	return (UFixedPoint<Integer, Fraction>(left) < right);
-}
-
-template< unsigned Integer, unsigned Fraction >
-bool operator >(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
-{
-	return (left.GetInternal() > right.GetInternal());
-}
-
-template< unsigned Integer, unsigned Fraction >
-bool operator >(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right)
-{
-	return (left > UFixedPoint<Integer, Fraction>(right));
-}
-
-template< unsigned Integer, unsigned Fraction >
-bool operator >(const typename UFixedPoint<Integer, Fraction>::IntegerType & left, const UFixedPoint<Integer, Fraction> & right)
-{
-	return (UFixedPoint<Integer, Fraction>(left) > right);
-}
-
-template< unsigned Integer, unsigned Fraction >
-bool operator <=(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
-{
-	return (left.GetInternal() <= right.GetInternal());
-}
-
-template< unsigned Integer, unsigned Fraction >
-bool operator <=(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right)
-{
-	return (left <= UFixedPoint<Integer, Fraction>(right));
-}
-
-template< unsigned Integer, unsigned Fraction >
-bool operator <=(const typename UFixedPoint<Integer, Fraction>::IntegerType & left, const UFixedPoint<Integer, Fraction> & right)
-{
-	return (UFixedPoint<Integer, Fraction>(left) <= right);
-}
-
-template< unsigned Integer, unsigned Fraction >
-bool operator >=(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
-{
-	return (left.GetInternal() >= right.GetInternal());
-}
-
-template< unsigned Integer, unsigned Fraction >
-bool operator >=(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right)
-{
-	return (left >= UFixedPoint<Integer, Fraction>(right));
-}
-
-template< unsigned Integer, unsigned Fraction >
-bool operator >=(const typename UFixedPoint<Integer, Fraction>::IntegerType & left, const UFixedPoint<Integer, Fraction> & right)
-{
-	return (UFixedPoint<Integer, Fraction>(left) >= right);
-}
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator +(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
+constexpr UFixedPoint<Integer, Fraction> operator +(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
 {
 	using InternalType = typename UFixedPoint<Integer, Fraction>::InternalType;
-	return UFixedPoint<Integer, Fraction>::FromInternal(static_cast<InternalType>(left.GetInternal() + right.GetInternal()));
+	return UFixedPoint<Integer, Fraction>::fromInternal(static_cast<InternalType>(left.getInternal() + right.getInternal()));
 }
 
 template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator +(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right)
+constexpr UFixedPoint<Integer, Fraction> operator -(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
 {
 	using InternalType = typename UFixedPoint<Integer, Fraction>::InternalType;
-	return UFixedPoint<Integer, Fraction>::FromInternal(static_cast<InternalType>(left.GetInternal() + (right << Fraction)));
+	return UFixedPoint<Integer, Fraction>::fromInternal(static_cast<InternalType>(left.getInternal() - right.getInternal()));
 }
 
 template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator +(const typename UFixedPoint<Integer, Fraction>::IntegerType & left, const UFixedPoint<Integer, Fraction> & right)
-{
-	using InternalType = typename UFixedPoint<Integer, Fraction>::InternalType;
-	return UFixedPoint<Integer, Fraction>::FromInternal(static_cast<InternalType>((left << Fraction) + right.GetInternal()));
-}
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator -(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
-{
-	using InternalType = typename UFixedPoint<Integer, Fraction>::InternalType;
-	return UFixedPoint<Integer, Fraction>::FromInternal(static_cast<InternalType>(left.GetInternal() - right.GetInternal()));
-}
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator -(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right)
-{
-	using InternalType = typename UFixedPoint<Integer, Fraction>::InternalType;
-	return UFixedPoint<Integer, Fraction>::FromInternal(static_cast<InternalType>(left.GetInternal() - (right << Fraction)));
-}
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator -(const typename UFixedPoint<Integer, Fraction>::IntegerType & left, const UFixedPoint<Integer, Fraction> & right)
-{
-	using InternalType = typename UFixedPoint<Integer, Fraction>::InternalType;
-	return UFixedPoint<Integer, Fraction>::FromInternal(static_cast<InternalType>((left << Fraction) - right.GetInternal()));
-}
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator *(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
+constexpr UFixedPoint<Integer, Fraction> operator *(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
 {
 	return static_cast<UFixedPoint<Integer, Fraction>>(Multiply(left, right));
 }
 
 template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator *(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right)
-{
-	return left * UFixedPoint<Integer, Fraction>(right);
-}
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator *(const typename UFixedPoint<Integer, Fraction>::IntegerType& left, const  UFixedPoint<Integer, Fraction> & right)
-{
-	return UFixedPoint<Integer, Fraction>(left) * right;
-}
-
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator /(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
+constexpr UFixedPoint<Integer, Fraction> operator /(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
 {
 	using InternalType = typename UFixedPoint<Integer, Fraction>::InternalType;
-	return UFixedPoint<Integer, Fraction>::FromInternal(static_cast<InternalType>((left.GetInternal() << Fraction) / right.GetInternal()));
+	return UFixedPoint<Integer, Fraction>::fromInternal(static_cast<InternalType>((left.getInternal() << Fraction) / right.getInternal()));
 }
 
-template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer, Fraction> operator /(const UFixedPoint<Integer, Fraction> & left, const typename UFixedPoint<Integer, Fraction>::IntegerType & right)
-{
-	return left / (UFixedPoint<Integer, Fraction>(right));
-}
+#define OPERATOR_LOGIC( type, op ) \
+	template< unsigned Integer, unsigned Fraction > \
+	constexpr bool operator op (const UFixedPoint<Integer, Fraction> & left, const type & right) \
+	{ \
+		return (left op UFixedPoint<Integer, Fraction>(right)); \
+	} \
+	\
+	template< unsigned Integer, unsigned Fraction > \
+	constexpr bool operator op (const type & left, const UFixedPoint<Integer, Fraction> & right) \
+	{ \
+		return (UFixedPoint<Integer, Fraction>(left) op right); \
+	}
+
+#define OPERATOR_ARITHMETIC( type, op ) \
+	template< unsigned Integer, unsigned Fraction > \
+	constexpr UFixedPoint<Integer, Fraction> operator op (const UFixedPoint<Integer, Fraction> & left, const type & right) \
+	{ \
+		return (left op UFixedPoint<Integer, Fraction>(right)); \
+	} \
+	\
+	template< unsigned Integer, unsigned Fraction > \
+	constexpr UFixedPoint<Integer, Fraction> operator op (const type & left, const UFixedPoint<Integer, Fraction> & right) \
+	{ \
+		return (UFixedPoint<Integer, Fraction>(left) op right); \
+	}
+	
+#define OPERATORS( opType, op ) \
+	OPERATOR_##opType( Details::IntegerLiteral, op ) \
+	OPERATOR_##opType( Details::IntegerLiteralU, op ) \
+	OPERATOR_##opType( Details::IntegerLiteralL, op ) \
+	OPERATOR_##opType( Details::IntegerLiteralUL, op ) \
+	OPERATOR_##opType( Details::IntegerLiteralLL, op ) \
+	OPERATOR_##opType( Details::IntegerLiteralULL, op ) \
+	OPERATOR_##opType( Details::DecimalLiteral, op ) \
+	OPERATOR_##opType( Details::DecimalLiteralF, op ) \
+	OPERATOR_##opType( Details::DecimalLiteralL, op )
+
+OPERATORS( LOGIC, == )
+OPERATORS( LOGIC, != )
+OPERATORS( LOGIC, < )
+OPERATORS( LOGIC, > )
+OPERATORS( LOGIC, <= )
+OPERATORS( LOGIC, >= )
+
+OPERATORS( ARITHMETIC , + )
+OPERATORS( ARITHMETIC, - )
+OPERATORS( ARITHMETIC, * )
+OPERATORS( ARITHMETIC, / )
+
+#undef OPERATOR_LOGIC
+#undef OPERATOR_ARITHMETIC
+#undef OPERATORS
 
 template< unsigned Integer, unsigned Fraction >
-UFixedPoint<Integer * 2, Fraction * 2> Multiply(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
+constexpr UFixedPoint<Integer * 2, Fraction * 2> Multiply(const UFixedPoint<Integer, Fraction> & left, const UFixedPoint<Integer, Fraction> & right)
 {
 	using ResultType = UFixedPoint<Integer * 2, Fraction * 2>;
 	using InternalType = typename ResultType::InternalType;
-	return ResultType::FromInternal(static_cast<InternalType>(static_cast<InternalType>(left.GetInternal()) * static_cast<InternalType>(right.GetInternal())));
+	return ResultType::fromInternal(static_cast<InternalType>(static_cast<InternalType>(left.getInternal()) * static_cast<InternalType>(right.getInternal())));
 }
 END_FIXED_POINTS

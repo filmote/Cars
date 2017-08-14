@@ -22,13 +22,13 @@ Base::Base(SQ7x8 x, SQ7x8 y, const uint8_t *bitmapRef, const uint8_t *maskRef) {
  */
 Rect Base::getRect() const {
 
-  return (Rect){this->getX().GetInteger(), this->getY().GetInteger(), pgm_read_byte(&_bitmap[0]), pgm_read_byte(&_bitmap[1])};
+  return (Rect){this->getX().getInteger(), this->getY().getInteger(), pgm_read_byte(&_bitmap[0]), pgm_read_byte(&_bitmap[1])};
 
 }
 
 Rect Base::getNewRect() const {
 
-  return (Rect){this->getNewX().GetInteger(), this->getNewY().GetInteger(), pgm_read_byte(&_bitmap[0]), pgm_read_byte(&_bitmap[1])};
+  return (Rect){this->getNewX().getInteger(), this->getNewY().getInteger(), pgm_read_byte(&_bitmap[0]), pgm_read_byte(&_bitmap[1])};
 
 }
 
@@ -118,8 +118,8 @@ void Base::setMask(const uint8_t *value) {
 
 void Base::renderImage(int16_t frame) {
 
-  if (this->getX().GetInteger() + this->getWidth() >= 0 && this->getX().GetInteger() < WIDTH) {
-    Sprites::drawExternalMask(this->getX().GetInteger(), this->getY().GetInteger(), _bitmap, _mask, frame, frame);
+  if (this->getX().getInteger() + this->getWidth() >= 0 && this->getX().getInteger() < WIDTH) {
+    Sprites::drawExternalMask(this->getX().getInteger(), this->getY().getInteger(), _bitmap, _mask, frame, frame);
   }
 
   _newX = _x;
@@ -129,8 +129,8 @@ void Base::renderImage(int16_t frame) {
 
 void Base::clearImage(int16_t frame) {
 
-  if (this->getX().GetInteger() + this->getWidth() >= 0 && this->getX().GetInteger() < WIDTH) {
-    Sprites::drawErase(this->getX().GetInteger(), this->getY().GetInteger(), _bitmap, frame);
+  if (this->getX().getInteger() + this->getWidth() >= 0 && this->getX().getInteger() < WIDTH) {
+    Sprites::drawErase(this->getX().getInteger(), this->getY().getInteger(), _bitmap, frame);
   }
   
 }

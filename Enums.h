@@ -28,11 +28,11 @@ enum class ObstacleType : uint8_t {
   Crossing,  
   Fuel,
   Jewel,
-  Count,
   Ramp,
   Crevice,
+  Count = Ramp,
   First = RoughRoad,
-  Last = Crossing,
+  Last = Jewel - 1,       
 };
 
 struct PointSQ7x8 {
