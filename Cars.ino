@@ -9,7 +9,7 @@
 #include "Sounds.h"
 
 Arduboy2 arduboy; 
-ArduboyTones sound(arduboy.audio.on);
+ArduboyTones sound(arduboy.audio.off);
 
 #define CAR_LAUNCH_DELAY_MAX          120
 #define CAR_LAUNCH_DELAY_MIN          60
@@ -38,8 +38,8 @@ Player player = {20, 24, FUEL_MAX, car_player, mask_player};
 
 const byte *car_images[] = { car_01, car_02, car_03, car_04, car_05, car_06, car_07, car_08 };
 const byte *car_masks[] =  { mask_01, mask_02, mask_03, mask_04, mask_05, mask_06, mask_07, mask_08 };
-const byte *obstacle_images[] = { roughPatch, crossing, fuel, jewel };
-const byte *obstacle_masks[] = { roughPatch, crossing, fuel_mask, jewel_mask };
+const byte *obstacle_images[] = { roughPatch, crossing, fuel, jewel, ramp, crevice };
+const byte *obstacle_masks[] = { roughPatch, crossing, fuel_mask, jewel_mask, ramp_mask, crevice_mask };
 const byte *upper_road_images[] = { upper_road, upper_road_up, upper_road_down };
 const byte *lower_road_images[] = { lower_road, lower_road_up, lower_road_down };
 
@@ -64,6 +64,10 @@ int16_t idx = 0; // scratch variable.
 uint16_t carLaunchCountdown = CAR_LAUNCH_DELAY_MIN;
 uint16_t carLaunchDelay = CAR_LAUNCH_DELAY_MIN;  // Stores the carLaunchCountdown when launching a new car, the bigger the number. the faster the car can go.
 uint16_t obstacleLaunchCountdown = OBSTACLE_LAUNCH_DELAY_MIN;
+
+bool rampVisible = false;
+uint8_t rampObstacleNo = 0;
+uint8_t rampCreviceObstacleNo = 0;
 
 
 bool sortByNewX(Car x, Car y) {
@@ -170,13 +174,11 @@ void loop() {
             break;
 
           case ObstacleType::Fuel:
-Serial.println("Fuel top up");
             player.setFuel(FUEL_MAX);
             obstacles[idx].setEnabled(false);
             break;
 
           case ObstacleType::Jewel:
-Serial.println("Jewel");
             player.setScore(player.getScore() + 1);
             obstacles[idx].setEnabled(false);
             break;
@@ -192,44 +194,60 @@ Serial.println("Jewel");
 
 
   // Should we launch another car?
-  
-  --carLaunchCountdown;
-  
-  if (carLaunchCountdown == 0) {
 
-    for (uint8_t carNumber = 0; carNumber < NUMBER_OF_CARS; ++carNumber) {
-
-      if (!cars[carNumber].getEnabled()) { 
-        launchCar(carNumber, carLaunchDelay); 
-        break;
+  if (!rampVisible) {
+    
+    --carLaunchCountdown;
+    
+    if (carLaunchCountdown == 0) {
+  
+//      for (uint8_t carNumber = 0; carNumber < NUMBER_OF_CARS; ++carNumber) {
+      for (uint8_t carNumber = 0; carNumber < 1; ++carNumber) {
+  
+        if (!cars[carNumber].getEnabled()) { 
+          launchCar(carNumber, carLaunchDelay); 
+          break;
+        }
+  
       }
-
+  
+      carLaunchCountdown = random(CAR_LAUNCH_DELAY_MIN, CAR_LAUNCH_DELAY_MAX);
+      carLaunchDelay = carLaunchCountdown;
+              
     }
 
-    carLaunchCountdown = random(CAR_LAUNCH_DELAY_MIN, CAR_LAUNCH_DELAY_MAX);
-    carLaunchDelay = carLaunchCountdown;
-            
   }
 
 
 
   // Should we launch another obstacle?
   
-  --obstacleLaunchCountdown;
+  if (!rampVisible) {
   
-  if (obstacleLaunchCountdown == 0) {
-
-    for (uint8_t obstacleNumber = 0; obstacleNumber < NUMBER_OF_OBSTACLES; ++obstacleNumber) {
-
-      if (!obstacles[obstacleNumber].getEnabled()) { 
-        launchObstacle(obstacleNumber); 
-        break;
+    --obstacleLaunchCountdown;
+    
+    if (obstacleLaunchCountdown == 0) {
+  
+      for (uint8_t obstacleNumber = 0; obstacleNumber < NUMBER_OF_OBSTACLES; ++obstacleNumber) {
+  
+        if (!obstacles[obstacleNumber].getEnabled()) { 
+          launchObstacle(obstacleNumber); 
+          break;
+        }
+  
       }
-
+  
+      obstacleLaunchCountdown = random(OBSTACLE_LAUNCH_DELAY_MIN, OBSTACLE_LAUNCH_DELAY_MAX);
+              
     }
 
-    obstacleLaunchCountdown = random(OBSTACLE_LAUNCH_DELAY_MIN, OBSTACLE_LAUNCH_DELAY_MAX);
-            
+  }
+  else {
+
+    if (obstacles[rampObstacleNo].getX().GetInteger() == WIDTH - 16) {
+//      launchCrevice();
+    }
+    
   }
 
 
@@ -239,6 +257,9 @@ Serial.println("Jewel");
   for (idx = 0; idx < NUMBER_OF_OBSTACLES; ++idx) {
     if (obstacles[idx].getEnabled()) { 
       obstacles[idx].move(scrollIncrement); 
+      if (!obstacles[idx].getEnabled() && (obstacles[idx].getObstacleType() == ObstacleType::Crevice)) {
+        rampVisible = false;
+      }
     }
   }
   
@@ -285,7 +306,7 @@ Serial.println("Jewel");
 
   // Are any cars touching other cars ?  Sort the cars into order so that the left most is processed first ..
 
-  sortArray(cars, 3, sortByNewX);
+//  sortArray(cars, 3, sortByNewX);
 
   bool checkCars = true;
 
@@ -381,20 +402,34 @@ Serial.println("Jewel");
     delay(60);
 
     /* Debug car position */
-    Serial.print("(player.getX().GetInteger() : ");
-    Serial.print(player.getX().GetInteger());
-    Serial.print(", getRoadElement_UpperLimit(player.getX().GetInteger()) + ROAD_OFFSET_UPPER : ");
-    Serial.print(getRoadElement_UpperLimit(player.getX().GetInteger()) + ROAD_OFFSET_UPPER);
-    Serial.print(", getRoadElement_LowerLimit(player.getX()) + ROAD_OFFSET_LOWER : ");
-    Serial.println(getRoadElement_LowerLimit(player.getX().GetInteger()) + ROAD_OFFSET_LOWER);
-
+//    Serial.print("(player.getX().GetInteger() : ");
+//    Serial.print(player.getX().GetInteger());
+//    Serial.print(", getRoadElement_UpperLimit(player.getX().GetInteger()) + ROAD_OFFSET_UPPER : ");
+//    Serial.print(getRoadElement_UpperLimit(player.getX().GetInteger()) + ROAD_OFFSET_UPPER);
+//    Serial.print(", getRoadElement_LowerLimit(player.getX()) + ROAD_OFFSET_LOWER : ");
+//    Serial.println(getRoadElement_LowerLimit(player.getX().GetInteger()) + ROAD_OFFSET_LOWER);
+debugRoad();
   }
   if (arduboy.pressed(B_BUTTON)) {
     delay(250);
   }
   
 }
+void debugRoad() {
 
+  for (int x = 0; x < 17; x++) {
+    Serial.print("{");
+    Serial.print(roadElements[x].upperLimit);
+    Serial.print(",");
+    Serial.print(roadElements[x].lowerLimit);
+    Serial.print(",");
+    Serial.print((int)roadElements[x].roadType);
+    Serial.print("}");
+  }
+
+  Serial.println(" ");
+
+}
 
 /* -----------------------------------------------------------------------------------------------------------------------------
  *  Render the scorebaord.
@@ -478,7 +513,7 @@ void renderScoreboard() {
  */
 const int16_t getRoadElement_UpperLimit(SQ7x8 x) {
 
-  return (x - road.x >= 0 ? roadElements[((x.GetInteger() - road.x) / 8)].upperLimit : roadElements[0].upperLimit);
+  return (x.GetInteger() + road.x ? roadElements[((x.GetInteger() + road.x) / 8)].upperLimit : roadElements[0].upperLimit);
   
 }
 
@@ -488,7 +523,7 @@ const int16_t getRoadElement_UpperLimit(SQ7x8 x) {
  */
 const int16_t getRoadElement_LowerLimit(SQ7x8 x) {
 
-  return (x - road.x >= 0 ? roadElements[((x.GetInteger() - road.x) / 8)].lowerLimit : roadElements[0].lowerLimit);
+  return (x.GetInteger() + road.x >= 0 ? roadElements[((x.GetInteger() + road.x) / 8)].lowerLimit : roadElements[0].lowerLimit);
 
 }
 
@@ -553,6 +588,7 @@ void launchCar(uint8_t carNumber, uint8_t launchDelay) {
   cars[carNumber].setSpeedX((random(speedXMin, speedXMax) / 100.0)); 
   cars[carNumber].setSpeedY((random(LAUNCH_SPEED_Y_MIN, LAUNCH_SPEED_Y_MAX) / 100.0));
   cars[carNumber].setSteeringType(static_cast<SteeringType> (random((uint8_t)SteeringType::First, (uint8_t)SteeringType::Count)));
+  cars[carNumber].setSteeringType(SteeringType::FollowRoad);
 
 }
 
@@ -602,11 +638,22 @@ void launchCar(uint8_t carNumber, uint8_t launchDelay) {
       obstacles[obstacleNumber].setBitmap(obstacle_images[(uint8_t)ObstacleType::Jewel]); 
       obstacles[obstacleNumber].setMask(obstacle_masks[(uint8_t)ObstacleType::Jewel]); 
       break;
+         
+    case ObstacleType::Ramp: 
+      obstacles[obstacleNumber].setObstacleType(ObstacleType::Ramp);
+      obstacles[obstacleNumber].setEnabled(true);
+      obstacles[obstacleNumber].setX(WIDTH);
+      obstacles[obstacleNumber].setY(random(road.y + ROAD_OFFSET_UPPER + 4 , road.y + road.height - 6 - obstacles[obstacleNumber].getHeight()));
+      obstacles[obstacleNumber].setBitmap(obstacle_images[(uint8_t)ObstacleType::Ramp]); 
+      obstacles[obstacleNumber].setMask(obstacle_masks[(uint8_t)ObstacleType::Ramp]); 
+
+      rampVisible = true;
+      rampObstacleNo = obstacleNumber;
+      break;
 
   }
   
 }
-
  
 /* -----------------------------------------------------------------------------------------------------------------------------
  *  Draw road.
@@ -783,7 +830,7 @@ bool collideWithCarInFront() {
  */
 bool collide(Rect rect1, Rect rect2, Direction testDirection) {
   
-  return (collide(rect1, rect2) & testDirection);
+  return (collide(rect1, rect2) & testDirection) == testDirection;
   
 }
 
@@ -795,7 +842,7 @@ bool collide(Rect rect1, Rect rect2, Direction testDirection) {
  */
 Direction collide(Rect rect1, Rect rect2) {
 
-  uint8_t direction = (uint8_t)Direction::None;
+  Direction direction = Direction::None;
  
   if (!(rect2.x                >= rect1.x + rect1.width  ||
         rect2.x + rect2.width  <= rect1.x                ||
@@ -812,3 +859,14 @@ Direction collide(Rect rect1, Rect rect2) {
   return direction;
 
 }
+
+//bool rampVisible() {
+//
+//  for (idx = 0; idx < NUMBER_OF_OBSTACLES; ++idx) {
+//    if (obstacles[idx].getEnabled() && obstacles[idx].getObstacleType() == Obstacle::Ramp) return true;
+//  }
+//
+//  return false;
+//  
+//}
+

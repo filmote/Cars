@@ -28,6 +28,8 @@ enum class ObstacleType : uint8_t {
   Crossing,  
   Fuel,
   Jewel,
+  Ramp,
+  Crevice,
   Count,
   First = RoughRoad,
   Last = Crossing,
@@ -54,7 +56,7 @@ struct Road {
 };
 
 
-enum Direction : uint8_t {
+enum class Direction : uint8_t {
   None = 0,
   Up = 1,  
   Down = 2,

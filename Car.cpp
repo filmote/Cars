@@ -5,7 +5,7 @@
 
 uint8_t randomCount = 0;
 uint8_t randomNumber = 0;
-        
+      
 int16_t _roadUpper;
 int16_t _roadLower;       
 bool _goingUp;
@@ -37,9 +37,9 @@ void Car::calcNewPosition(uint8_t pixels, int16_t roadUpper, int16_t roadLower) 
   if (x >= 0) {  // No steering for cars leaving screen ..
     
     switch (_steeringType) {
-  
+
       case (SteeringType::FollowRoad):
-  
+
         if (_roadUpper > 0 && _roadLower > 0) {
   
           if (_roadUpper > roadUpper) {      // Road is going up.
@@ -100,14 +100,12 @@ void Car::calcNewPosition(uint8_t pixels, int16_t roadUpper, int16_t roadLower) 
             break;
             
           case RoadType::Up:
-//Serial.println("Up");
             if (y > roadUpper) {
               y = y - _speedY;
             }
             break;
             
           case RoadType::Down:
-//Serial.println("Down");
             if (y < roadLower) {
               y = y + _speedY;
             }
@@ -121,6 +119,9 @@ void Car::calcNewPosition(uint8_t pixels, int16_t roadUpper, int16_t roadLower) 
     
   }
 
+  _roadUpper = roadUpper;
+  _roadLower = roadLower;
+  
   this->setNewX(x);
   this->setNewY(y);
 

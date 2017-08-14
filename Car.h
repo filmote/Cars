@@ -47,5 +47,6 @@ class Car : public Base {
     SQ7x8 _speedX;      
     SQ7x8 _speedY;  
 
+
 };
 #endif
