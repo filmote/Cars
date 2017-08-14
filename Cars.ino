@@ -292,7 +292,7 @@ Serial.println("Launch Ramp ");
 
           obstacles[3].setObstacleType(ObstacleType::Ramp);
           obstacles[3].setEnabled(true);
-          obstacles[3].setX(static_cast<SQ7x8>(128.0));
+          obstacles[3].setX(static_cast<SQ7x8>(60.0));
           obstacles[3].setY(random(road.y + ROAD_OFFSET_UPPER + 4 , road.y + road.height - 6 - obstacles[3].getHeight()));
           obstacles[3].setBitmap(obstacle_images[(uint8_t)ObstacleType::Ramp]); 
           obstacles[3].setMask(obstacle_masks[(uint8_t)ObstacleType::Ramp]); 
@@ -312,7 +312,7 @@ Serial.print(" ");
 Serial.println(static_cast<float>(obstacles[4].getX()));      
           obstacles[4].setObstacleType(ObstacleType::Crevice);
           obstacles[4].setEnabled(true);
-          obstacles[4].setX(static_cast<SQ7x8>(60.0));
+          obstacles[4].setX(static_cast<SQ7x8>(192.0));
           obstacles[4].setY(8);
           obstacles[4].setBitmap(obstacle_images[(uint8_t)ObstacleType::Crevice]); 
           obstacles[4].setMask(obstacle_masks[(uint8_t)ObstacleType::Crevice]); 
