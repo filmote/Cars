@@ -11,7 +11,7 @@ class Base {
 
    public:
 
-     Base(SQ7x8 x, SQ7x8 y, const uint8_t *bitmapRef, const uint8_t *maskRef);
+     Base(SQ15x16 x, SQ15x16 y, const uint8_t *bitmapRef, const uint8_t *maskRef);
 
      Rect getRect() const;
      Rect getRect(int x, int y) const;
@@ -21,17 +21,17 @@ class Base {
      void clearImage(int16_t frame);
      void updatePosition();
      
-     const SQ7x8 getX() const;
-     const SQ7x8 getY() const;
-     const SQ7x8 getNewX() const;
-     const SQ7x8 getNewY() const;
-     const SQ7x8 getDeltaX() const;
-     const SQ7x8 getDeltaY() const;
+     const SQ15x16 getX() const;
+     const SQ15x16 getY() const;
+     const SQ15x16 getNewX() const;
+     const SQ15x16 getNewY() const;
+     const SQ15x16 getDeltaX() const;
+     const SQ15x16 getDeltaY() const;
 
-     void setX(const SQ7x8 value);
-     void setY(const SQ7x8 value);
-     void setNewX(const SQ7x8 value);
-     void setNewY(const SQ7x8 value);
+     void setX(const SQ15x16 value);
+     void setY(const SQ15x16 value);
+     void setNewX(const SQ15x16 value);
+     void setNewY(const SQ15x16 value);
      void setBitmap(const uint8_t *value);
      void setMask(const uint8_t *value);
 
@@ -39,10 +39,10 @@ class Base {
      uint8_t getHeight() const;
      
    private:
-     SQ7x8 _x;               
-     SQ7x8 _y;               
-     SQ7x8 _newX;            
-     SQ7x8 _newY;            
+     SQ15x16 _x;               
+     SQ15x16 _y;               
+     SQ15x16 _newX;            
+     SQ15x16 _newY;            
 
    protected:
      const uint8_t *_bitmap;

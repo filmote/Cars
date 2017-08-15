@@ -3,20 +3,20 @@
 #include "Sprites.h"
 #include "Enums.h"
 
-Player::Player(SQ7x8 x, SQ7x8 y, SQ7x8 fuel, const uint8_t *bitmapRef, const uint8_t *maskRef) :
+Player::Player(SQ15x16 x, SQ15x16 y, SQ15x16 fuel, const uint8_t *bitmapRef, const uint8_t *maskRef) :
         Base(x, y, bitmapRef, maskRef) {
           
   _fuel = fuel;
 
 }
 
-const SQ7x8 Player::getFuel() const {
+const SQ15x16 Player::getFuel() const {
 
   return _fuel;
 
 }
 
-void Player::setFuel(const SQ7x8 value) {
+void Player::setFuel(const SQ15x16 value) {
 
   _fuel = value;
 

@@ -3,7 +3,7 @@
 #include "Sprites.h"
 #include "Enums.h"
     
-Car::Car(uint8_t name, SQ7x8 x, SQ7x8 y, SQ7x8 speedX, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType) :
+Car::Car(uint8_t name, SQ15x16 x, SQ15x16 y, SQ15x16 speedX, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType) :
      Base(x, y, bitmapRef, maskRef) {
 
   _name = name;
@@ -24,8 +24,8 @@ bool Car::operator!=(const Car &c) const {
 
 void Car::calcNewPosition(uint8_t pixels, int16_t roadUpper, int16_t roadLower) {
 
-  SQ7x8 x = this->getX() - pixels + this->getSpeedX();
-  SQ7x8 y = this->getY();
+  SQ15x16 x = this->getX() - pixels + this->getSpeedX();
+  SQ15x16 y = this->getY();
 
   if (x >= 0) {  // No steering for cars leaving screen ..
     
@@ -159,25 +159,25 @@ void Car::setSteeringType(const SteeringType value) {
   
 }
 
-const SQ7x8 Car::getSpeedX() const {
+const SQ15x16 Car::getSpeedX() const {
 
   return _speedX;
 
 }
 
-void Car::setSpeedX(const SQ7x8 value) {
+void Car::setSpeedX(const SQ15x16 value) {
 
   _speedX = value;
 
 }
 
-const SQ7x8 Car::getSpeedY() const {
+const SQ15x16 Car::getSpeedY() const {
 
   return _speedY;
 
 }
 
-void Car::setSpeedY(const SQ7x8 value) {
+void Car::setSpeedY(const SQ15x16 value) {
 
   _speedY = value;
 

@@ -3,20 +3,11 @@
 #include "Sprites.h"
 #include "Enums.h"
 
-Obstacle::Obstacle(SQ7x8 x, SQ7x8 y, const uint8_t *bitmapRef, const uint8_t *maskRef) :
+Obstacle::Obstacle(SQ15x16 x, SQ15x16 y, const uint8_t *bitmapRef, const uint8_t *maskRef) :
           Base(x, y, bitmapRef, maskRef) {
 
   _enabled = false;
   
-}
-
-void Obstacle::setX(const SQ7x8 value) {
-Serial.print("setX() ");
-Serial.print(static_cast<float>(value));
-Serial.print(" ");
-Serial.println(value.getInteger());
-  Base::setX(value);
-
 }
 
 void Obstacle::move(uint8_t pixels) {

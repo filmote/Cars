@@ -5,7 +5,7 @@
 #include "FixedPoints.h"
 #include "FixedPointsCommon.h"
 
-Base::Base(SQ7x8 x, SQ7x8 y, const uint8_t *bitmapRef, const uint8_t *maskRef) {
+Base::Base(SQ15x16 x, SQ15x16 y, const uint8_t *bitmapRef, const uint8_t *maskRef) {
 
   _x = x;
   _newX = x;
@@ -41,39 +41,39 @@ Rect Base::getRect(int16_t x, int16_t y) const {
 
 }
 
-const SQ7x8 Base::getX() const {
+const SQ15x16 Base::getX() const {
 
   return _x;
 
 }
 
-void Base::setX(const SQ7x8 value) {
+void Base::setX(const SQ15x16 value) {
 
   _x = value;
   _newX = value;
 
 }
 
-const SQ7x8 Base::getY() const {
+const SQ15x16 Base::getY() const {
 
   return _y;
 
 }
 
-void Base::setY(const SQ7x8 value) {
+void Base::setY(const SQ15x16 value) {
 
   _y = value;
   _newY = value;
 
 }
 
-const SQ7x8 Base::getDeltaX() const {
+const SQ15x16 Base::getDeltaX() const {
 
   return _newX - _x;
 
 }
 
-const SQ7x8 Base::getDeltaY() const {
+const SQ15x16 Base::getDeltaY() const {
 
   return _newY - _y;
 
@@ -142,27 +142,25 @@ void Base::updatePosition() {
 
 }
 
-const SQ7x8 Base::getNewX() const {
+const SQ15x16 Base::getNewX() const {
 
   return _newX;
 
 }
 
-void Base::setNewX(const SQ7x8 value) {
-//  Serial.print("  --  ");
-//Serial.print(static_cast<float>(value));
-//  Serial.print("  --  ");
+void Base::setNewX(const SQ15x16 value) {
+
   _newX = value;
 
 }
 
-const SQ7x8 Base::getNewY() const {
+const SQ15x16 Base::getNewY() const {
 
   return _newY;
 
 }
 
-void Base::setNewY(const SQ7x8 value) {
+void Base::setNewY(const SQ15x16 value) {
 
   _newY = value;
 

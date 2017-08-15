@@ -9,13 +9,10 @@
 #include "Sounds.h"
 
 Arduboy2 arduboy; 
-ArduboyTones sound(arduboy.audio.off);
+ArduboyTones sound(arduboy.audio.on);
 
 #define CAR_LAUNCH_DELAY_MAX          120
 #define CAR_LAUNCH_DELAY_MIN          60
-
-#define OBSTACLE_LAUNCH_DELAY_MAX     300
-#define OBSTACLE_LAUNCH_DELAY_MIN     125
 
 #define NUMBER_OF_CAR_IMAGES          8
 #define NUMBER_OF_CARS                3
@@ -23,6 +20,11 @@ ArduboyTones sound(arduboy.audio.off);
 #define NUMBER_OF_OBSTACLES_INC_RAMP  NUMBER_OF_OBSTACLES + 2
 #define NUMBER_OF_ROADSIDES           6
 #define ROAD_IMAGES_HEIGHT            24
+
+#define OBSTACLE_LAUNCH_DELAY_MAX     300
+#define OBSTACLE_LAUNCH_DELAY_MIN     125
+#define OBSTACLE_RAMP                 NUMBER_OF_OBSTACLES
+#define OBSTACLE_CREVICE              OBSTACLE_RAMP + 1
 
 #define ROAD_OFFSET_UPPER             22
 #define ROAD_OFFSET_LOWER             2
@@ -68,10 +70,6 @@ uint16_t carLaunchCountdown = CAR_LAUNCH_DELAY_MIN;
 uint16_t carLaunchDelay = CAR_LAUNCH_DELAY_MIN;  // Stores the carLaunchCountdown when launching a new car, the bigger the number. the faster the car can go.
 uint16_t obstacleLaunchCountdown = OBSTACLE_LAUNCH_DELAY_MIN;
 
-bool rampVisible = false;
-//uint8_t rampObstacleNo = 0;
-//uint8_t rampCreviceObstacleNo = 0;
-
 
 bool sortByNewX(Car x, Car y) {
   
@@ -92,7 +90,7 @@ bool sortByNewX(Car x, Car y) {
 void setup() {
   
   arduboy.begin();
-  arduboy.setFrameRate(120);
+  arduboy.setFrameRate(60);
   arduboy.initRandomSeed();
 
   for (idx = 0; idx < 17; ++idx) {
@@ -108,7 +106,7 @@ void setup() {
   Sprites::drawOverwrite(0, 0, Hannibal, frame);
   arduboy.display();
 
-  sound.tones(score2);
+  sound.tones(score3);
   while (!arduboy.pressed(A_BUTTON)) {
     delay(100);
   }
@@ -125,19 +123,7 @@ void setup() {
 void loop() {
 
   if (!(arduboy.nextFrame())) return;
-Serial.print(rampVisible);
-Serial.print(": ");
-Serial.print(obstacles[3].getEnabled());
-Serial.print(" ");
-Serial.print(static_cast<uint8_t>(obstacles[3].getObstacleType()));
-Serial.print(" ");
-Serial.print(static_cast<float>(obstacles[3].getX()));
-Serial.print(", ");
-Serial.print(obstacles[4].getEnabled());
-Serial.print(" ");
-Serial.print(static_cast<uint8_t>(obstacles[4].getObstacleType()));
-Serial.print(" ");
-Serial.println(static_cast<float>(obstacles[4].getX()));
+
   
   // Clear the screen ..
 
@@ -155,20 +141,20 @@ Serial.println(static_cast<float>(obstacles[4].getX()));
 
   // Handle player movement ..
   
-  player.setFuel(player.getFuel() - static_cast<SQ7x8>(FUEL_DECREMENT));
+  player.setFuel(player.getFuel() - static_cast<SQ15x16>(FUEL_DECREMENT));
   
-  if (arduboy.pressed(UP_BUTTON) && player.getY() > 0 && !collideWithCarAbove())                                { player.setY(player.getY() - static_cast<SQ7x8>(0.5)); }
-  if (arduboy.pressed(DOWN_BUTTON) && player.getY() < HEIGHT - player.getHeight() && !collideWithCarBelow())    { player.setY(player.getY() + static_cast<SQ7x8>(0.5)); }
-  if (arduboy.pressed(LEFT_BUTTON) && player.getX() > 0)                                                        { player.setX(player.getX() - static_cast<SQ7x8>(0.75)); }
-  if (arduboy.pressed(RIGHT_BUTTON) && player.getX() < 64 && !collideWithCarInFront())                          { player.setFuel(player.getFuel() - static_cast<SQ7x8>(FUEL_DECREMENT_BOOST));
-                                                                                                                  player.setX(player.getX() + static_cast<SQ7x8>(0.80)); }
+  if (arduboy.pressed(UP_BUTTON) && player.getY() > 0 && !collideWithCarAbove())                                { player.setY(player.getY() - static_cast<SQ15x16>(0.5)); }
+  if (arduboy.pressed(DOWN_BUTTON) && player.getY() < HEIGHT - player.getHeight() && !collideWithCarBelow())    { player.setY(player.getY() + static_cast<SQ15x16>(0.5)); }
+  if (arduboy.pressed(LEFT_BUTTON) && player.getX() > 0)                                                        { player.setX(player.getX() - static_cast<SQ15x16>(0.75)); }
+  if (arduboy.pressed(RIGHT_BUTTON) && player.getX() < 64 && !collideWithCarInFront())                          { player.setFuel(player.getFuel() - static_cast<SQ15x16>(FUEL_DECREMENT_BOOST));
+                                                                                                                  player.setX(player.getX() + static_cast<SQ15x16>(0.80)); }
 
 
 
   // Is the player in the rough ?
 
-  if (player.getY().getInteger() < getRoadElement_UpperLimit(player.getX()) + ROAD_OFFSET_UPPER)                         { sound.tones(sound_drivingInRough); player.setX(player.getX() - static_cast<SQ7x8>(0.4)); }
-  if (player.getY().getInteger() + player.getHeight() > getRoadElement_LowerLimit(player.getX()) + ROAD_OFFSET_LOWER)    { sound.tones(sound_drivingInRough); player.setX(player.getX() - static_cast<SQ7x8>(0.4)); }
+  if (player.getY().getInteger() < getRoadElement_UpperLimit(player.getX()) + ROAD_OFFSET_UPPER)                         { sound.tones(sound_drivingInRough); player.setX(player.getX() - static_cast<SQ15x16>(0.4)); }
+  if (player.getY().getInteger() + player.getHeight() > getRoadElement_LowerLimit(player.getX()) + ROAD_OFFSET_LOWER)    { sound.tones(sound_drivingInRough); player.setX(player.getX() - static_cast<SQ15x16>(0.4)); }
 
 
 
@@ -210,7 +196,7 @@ Serial.println(static_cast<float>(obstacles[4].getX()));
 
   // Should we launch another car?
 
-  if (!rampVisible) {
+  if (!obstacles[OBSTACLE_CREVICE].getEnabled()) {
     
     --carLaunchCountdown;
     
@@ -236,7 +222,7 @@ Serial.println(static_cast<float>(obstacles[4].getX()));
 
   // Should we launch another obstacle?
   
-  if (!rampVisible) {
+  if (!obstacles[OBSTACLE_CREVICE].getEnabled()) {
   
     --obstacleLaunchCountdown;
     
@@ -262,7 +248,7 @@ Serial.println(static_cast<float>(obstacles[4].getX()));
   
   bool launch = true;
   
-  if (!rampVisible) {
+  if (!obstacles[OBSTACLE_CREVICE].getEnabled()) {
 
     for (idx = 0; idx < NUMBER_OF_CARS; ++idx) {
 
@@ -290,48 +276,19 @@ Serial.println(static_cast<float>(obstacles[4].getX()));
 
 Serial.println("Launch Ramp ");
 
-          obstacles[3].setObstacleType(ObstacleType::Ramp);
-          obstacles[3].setEnabled(true);
-          obstacles[3].setX(static_cast<SQ7x8>(60.0));
-          obstacles[3].setY(random(road.y + ROAD_OFFSET_UPPER + 4 , road.y + road.height - 6 - obstacles[3].getHeight()));
-          obstacles[3].setBitmap(obstacle_images[(uint8_t)ObstacleType::Ramp]); 
-          obstacles[3].setMask(obstacle_masks[(uint8_t)ObstacleType::Ramp]); 
-Serial.print("-- A  ");
-Serial.print(rampVisible);
-Serial.print(": ");
-Serial.print(obstacles[3].getEnabled());
-Serial.print(" ");
-Serial.print(static_cast<uint8_t>(obstacles[3].getObstacleType()));
-Serial.print(" ");
-Serial.print(static_cast<float>(obstacles[3].getX()));
-Serial.print(", ");
-Serial.print(obstacles[4].getEnabled());
-Serial.print(" ");
-Serial.print(static_cast<uint8_t>(obstacles[4].getObstacleType()));
-Serial.print(" ");
-Serial.println(static_cast<float>(obstacles[4].getX()));      
-          obstacles[4].setObstacleType(ObstacleType::Crevice);
-          obstacles[4].setEnabled(true);
-          obstacles[4].setX(static_cast<SQ7x8>(192.0));
-          obstacles[4].setY(8);
-          obstacles[4].setBitmap(obstacle_images[(uint8_t)ObstacleType::Crevice]); 
-          obstacles[4].setMask(obstacle_masks[(uint8_t)ObstacleType::Crevice]); 
-      
-          rampVisible = true;
-Serial.print("-- B ");
-Serial.print(rampVisible);
-Serial.print(": ");
-Serial.print(obstacles[3].getEnabled());
-Serial.print(" ");
-Serial.print(static_cast<uint8_t>(obstacles[3].getObstacleType()));
-Serial.print(" ");
-Serial.print(static_cast<float>(obstacles[3].getX()));
-Serial.print(", ");
-Serial.print(obstacles[4].getEnabled());
-Serial.print(" ");
-Serial.print(static_cast<uint8_t>(obstacles[4].getObstacleType()));
-Serial.print(" ");
-Serial.println(static_cast<float>(obstacles[4].getX()));
+          obstacles[OBSTACLE_RAMP].setObstacleType(ObstacleType::Ramp);
+          obstacles[OBSTACLE_RAMP].setEnabled(true);
+          obstacles[OBSTACLE_RAMP].setX(WIDTH);
+          obstacles[OBSTACLE_RAMP].setY(random(road.y + ROAD_OFFSET_UPPER + 4 , road.y + road.height - 6 - obstacles[3].getHeight()));
+          obstacles[OBSTACLE_RAMP].setBitmap(obstacle_images[(uint8_t)ObstacleType::Ramp]); 
+          obstacles[OBSTACLE_RAMP].setMask(obstacle_masks[(uint8_t)ObstacleType::Ramp]); 
+
+          obstacles[OBSTACLE_CREVICE].setObstacleType(ObstacleType::Crevice);
+          obstacles[OBSTACLE_CREVICE].setEnabled(true);
+          obstacles[OBSTACLE_CREVICE].setX(WIDTH + 40);
+          obstacles[OBSTACLE_CREVICE].setY(road.y + 2);
+          obstacles[OBSTACLE_CREVICE].setBitmap(obstacle_images[(uint8_t)ObstacleType::Crevice]); 
+          obstacles[OBSTACLE_CREVICE].setMask(obstacle_masks[(uint8_t)ObstacleType::Crevice]); 
           
       }
       
@@ -345,9 +302,6 @@ Serial.println(static_cast<float>(obstacles[4].getX()));
   for (idx = 0; idx < NUMBER_OF_OBSTACLES_INC_RAMP; ++idx) {
     if (obstacles[idx].getEnabled()) { 
       obstacles[idx].move(scrollIncrement); 
-      if (!obstacles[idx].getEnabled() && (obstacles[idx].getObstacleType() == ObstacleType::Crevice)) {
-        rampVisible = false;
-      }
     }
   }
   
@@ -378,12 +332,12 @@ Serial.println(static_cast<float>(obstacles[4].getX()));
         // Only move the car back once - even if it is touching multiple cars ..
         
         if (!collisionAlreadyDetected) { 
-          player.setX(player.getX() - static_cast<SQ7x8>(0.4));
+          player.setX(player.getX() - 0.4);
           sound.tones(sound_bump); 
           collisionAlreadyDetected = true;
         }
   
-        cars[idx].setNewX(cars[idx].getX() + static_cast<SQ7x8>(0.4));
+        cars[idx].setNewX(cars[idx].getX() + 0.4);
         
       }
       
@@ -599,7 +553,7 @@ void renderScoreboard() {
 /* -----------------------------------------------------------------------------------------------------------------------------
  *  Get the upper limit of the road at position X
  */
-const int16_t getRoadElement_UpperLimit(SQ7x8 x) {
+const int16_t getRoadElement_UpperLimit(SQ15x16 x) {
 
   return (x.getInteger() + road.x ? roadElements[((x.getInteger() + road.x) / 8)].upperLimit : roadElements[0].upperLimit);
   
@@ -609,7 +563,7 @@ const int16_t getRoadElement_UpperLimit(SQ7x8 x) {
 /* -----------------------------------------------------------------------------------------------------------------------------
  *  Get the lower limit of the road at position X
  */
-const int16_t getRoadElement_LowerLimit(SQ7x8 x) {
+const int16_t getRoadElement_LowerLimit(SQ15x16 x) {
 
   return (x.getInteger() + road.x >= 0 ? roadElements[((x.getInteger() + road.x) / 8)].lowerLimit : roadElements[0].lowerLimit);
 
@@ -689,7 +643,7 @@ void launchCar(uint8_t carNumber, uint8_t launchDelay) {
 
   ObstacleType type;
 
-Serial.println(static_cast<float>(player.getFuel()));
+//Serial.println(static_cast<float>(player.getFuel()));
 
   if (player.getFuel() <= 4) {
     type = ObstacleType::Fuel;
@@ -759,7 +713,7 @@ void drawRoad() {
     
     if (road.randomCount == 0) {
       
-      if (road.randomNumber > 0) {
+      if (road.randomNumber > 0 || (obstacles[OBSTACLE_CREVICE].getEnabled() && obstacles[OBSTACLE_CREVICE].getX().getInteger() > 90)) {
         road.randomNumber = 0;
       }
       else {
@@ -839,7 +793,7 @@ void drawRoad() {
 bool collideWithCarAbove() {
 
   player.setNewX(player.getX());
-  player.setNewY(player.getY() - static_cast<SQ7x8>(0.5));
+  player.setNewY(player.getY() - static_cast<SQ15x16>(0.5));
 
   for (idx = 0; idx < NUMBER_OF_CARS; ++idx) {
       
@@ -864,7 +818,7 @@ bool collideWithCarAbove() {
 bool collideWithCarBelow() {
 
   player.setNewX(player.getX());
-  player.setNewY(player.getY() + static_cast<SQ7x8>(0.5));
+  player.setNewY(player.getY() + static_cast<SQ15x16>(0.5));
 
   for (idx = 0; idx < NUMBER_OF_CARS; ++idx) {
 
@@ -889,7 +843,7 @@ bool collideWithCarBelow() {
 bool collideWithCarInFront() {
 
   player.setNewX(player.getX());
-  player.setNewY(player.getY() + static_cast<SQ7x8>(0.5));
+  player.setNewY(player.getY() + static_cast<SQ15x16>(0.5));
 
   for (idx = 0; idx < NUMBER_OF_CARS; ++idx) {
 

@@ -11,7 +11,7 @@
 class Car : public Base {
 
   public:  
-    Car(uint8_t name, SQ7x8 x, SQ7x8 y, SQ7x8 speedX, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType);
+    Car(uint8_t name, SQ15x16 x, SQ15x16 y, SQ15x16 speedX, const uint8_t *bitmapRef, const uint8_t *maskRef, const Car *cars, const SteeringType steeringType);
     
     bool operator==(const Car &c) const; 
     bool operator!=(const Car &c) const; 
@@ -25,16 +25,16 @@ class Car : public Base {
        
     const uint8_t getName() const;
     const bool getEnabled() const;
-    const SQ7x8 getSpeedX() const;
-    const SQ7x8 getSpeedY() const;
+    const SQ15x16 getSpeedX() const;
+    const SQ15x16 getSpeedY() const;
     const SteeringType getSteeringType() const;
     const int16_t getRoadUpper() const;
     const int16_t getRoadLower() const;
     
     void setName(const uint8_t value);
     void setEnabled(const bool value);
-    void setSpeedX(const SQ7x8 value);
-    void setSpeedY(const SQ7x8 value);
+    void setSpeedX(const SQ15x16 value);
+    void setSpeedY(const SQ15x16 value);
     void setSteeringType(const SteeringType value);
     void setRoadUpper(const int16_t value);
     void setRoadLower(const int16_t value);
@@ -44,8 +44,8 @@ class Car : public Base {
     uint8_t _name;
     const Car *_cars;
     SteeringType _steeringType;
-    SQ7x8 _speedX;      
-    SQ7x8 _speedY;  
+    SQ15x16 _speedX;      
+    SQ15x16 _speedY;  
 
 
     // Steering variables ..

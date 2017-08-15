@@ -35,9 +35,9 @@ enum class ObstacleType : uint8_t {
   Last = Jewel - 1,       
 };
 
-struct PointSQ7x8 {
-  SQ7x8 x;
-  SQ7x8 y;
+struct PointSQ15x16 {
+  SQ15x16 x;
+  SQ15x16 y;
 };
 
 struct RoadElement {
