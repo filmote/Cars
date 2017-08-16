@@ -9,7 +9,7 @@
 #include "Sounds.h"
 
 Arduboy2 arduboy; 
-ArduboyTones sound(arduboy.audio.off);
+ArduboyTones sound(arduboy.audio.on);
 
 #define CAR_LAUNCH_DELAY_MAX          120
 #define CAR_LAUNCH_DELAY_MIN          60
