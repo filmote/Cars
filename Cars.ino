@@ -9,7 +9,7 @@
 #include "Sounds.h"
 
 Arduboy2 arduboy; 
-ArduboyTones sound(arduboy.audio.on);
+ArduboyTones sound(arduboy.audio.off);
 
 #define CAR_LAUNCH_DELAY_MAX          120
 #define CAR_LAUNCH_DELAY_MIN          60
@@ -103,10 +103,10 @@ void setup() {
 
   arduboy.clear();
   arduboy.fillRect(0, 0, WIDTH, HEIGHT, WHITE);
-  Sprites::drawOverwrite(0, 0, Hannibal, frame);
+  Sprites::drawOverwrite(-6, -2, Hannibal, frame);
   arduboy.display();
 
-  sound.tones(score3);
+  sound.tones(theme);
   while (!arduboy.pressed(A_BUTTON)) {
     delay(100);
   }
